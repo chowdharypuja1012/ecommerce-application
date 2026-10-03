@@ -14,6 +14,7 @@ DEBUG = os.environ.get("DEBUG", "False") == "True"
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 
 INSTALLED_APPS = [
+    "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.staticfiles",
     "rest_framework",
@@ -43,10 +44,28 @@ WSGI_APPLICATION = "api_gateway.wsgi.application"
 # Gateway has no own database — it only proxies to services
 DATABASES = {}
 
-# CORS — only allow configured origins; never use CORS_ALLOW_ALL_ORIGINS=True
+# CORS — narrow allowlist; never use CORS_ALLOW_ALL_ORIGINS=True in any environment
+CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = os.environ.get(
     "CORS_ALLOWED_ORIGINS", "http://localhost:5173"
 ).split(",")
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "authorization",
+    "content-type",
+    "x-correlation-id",
+    "x-csrftoken",
+]
+# Expose correlation ID to clients so they can reference it in bug reports
+CORS_EXPOSE_HEADERS = ["X-Correlation-ID"]
 
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],

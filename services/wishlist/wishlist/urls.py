@@ -1,17 +1,9 @@
-from django.contrib import admin
+﻿from django.contrib import admin
 from django.urls import path
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-
-
-@api_view(["GET"])
-def health(request):
-    """Service health check — GET /api/v1/health/"""
-    return Response({"service": "wishlist", "status": "ok"})
-
+from .health import make_health_view
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/v1/health/", health, name="health"),
+    path("api/v1/health/", make_health_view("wishlist"), name="health"),
     # Feature routes added in later tasks
 ]
