@@ -98,3 +98,8 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# -- Startup validation -- fails clearly if required env vars are missing ------
+from .settings_validator import validate_settings, BASE_REQUIRED_VARS
+validate_settings('reviews', BASE_REQUIRED_VARS)
+

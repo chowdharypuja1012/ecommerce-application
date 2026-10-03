@@ -68,3 +68,8 @@ WISHLIST_SERVICE_URL  = os.environ.get("WISHLIST_SERVICE_URL",  "http://127.0.0.
 ORDERS_SERVICE_URL    = os.environ.get("ORDERS_SERVICE_URL",    "http://127.0.0.1:8005")
 PAYMENTS_SERVICE_URL  = os.environ.get("PAYMENTS_SERVICE_URL",  "http://127.0.0.1:8006")
 REVIEWS_SERVICE_URL   = os.environ.get("REVIEWS_SERVICE_URL",   "http://127.0.0.1:8007")
+
+# -- Startup validation -- fails clearly if required env vars are missing ------
+from .settings_validator import validate_settings, GATEWAY_REQUIRED_VARS
+validate_settings('gateway', GATEWAY_REQUIRED_VARS)
+
