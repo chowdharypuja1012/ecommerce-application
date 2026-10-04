@@ -3,6 +3,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 
 from .models import Address, Profile
@@ -22,6 +23,8 @@ class RegisterView(APIView):
     Generates DRF auth token upon creation.
     """
     permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'auth'
 
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
@@ -47,6 +50,9 @@ class LoginView(APIView):
     Returns auth token on success.
     """
     permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'auth'
+
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
