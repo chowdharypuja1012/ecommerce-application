@@ -3,7 +3,7 @@ from django.db.models import Q
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import ListAPIView, RetrieveAPIView
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -47,11 +47,6 @@ class ProductListView(APIView):
     """
     GET /api/v1/products/
     Returns paginated list of active products.
-    Supports:
-    - Search: ?search=keyword (matches name, description, SKU)
-    - Category filter: ?category=slug or ?category_id=id
-    - Price range: ?min_price=X & ?max_price=Y (validates numeric values)
-    - Sorting: ?ordering=price | -price | name | -name | created_at | -created_at
     """
     permission_classes = [AllowAny]
     pagination_class = StandardResultsSetPagination
@@ -114,7 +109,6 @@ class ProductListView(APIView):
             except (InvalidOperation, ValueError):
                 errors["max_price"] = "max_price must be a valid numeric decimal value."
 
-        # If price validation failed, return 400 Bad Request
         if errors:
             return Response(
                 {"error": "Invalid filter parameters", "details": errors},
@@ -149,8 +143,6 @@ class ProductDetailView(APIView):
 
     def get(self, request, slug):
         queryset = Product.objects.filter(is_active=True).select_related("category")
-        
-        # Try slug lookup first, then id lookup if slug is digit
         product = queryset.filter(slug=slug).first()
         if not product and slug.isdigit():
             product = queryset.filter(id=int(slug)).first()
@@ -163,3 +155,104 @@ class ProductDetailView(APIView):
 
         serializer = ProductDetailSerializer(product)
         return Response(serializer.data)
+
+
+# ── ADMIN OPERATIONS ─────────────────────────────────────────────────────────
+
+class AdminProductCreateView(APIView):
+    """
+    POST /api/v1/catalogue/admin/products/
+    Admin-only workflow for creating a new product.
+    Enforces server-side IsAdminUser permission.
+    """
+    permission_classes = [IsAdminUser]
+
+    def post(self, request):
+        data = request.data
+        name = data.get("name")
+        sku = data.get("sku")
+        price = data.get("price")
+        stock = data.get("stock", 0)
+        category_id = data.get("category_id")
+
+        if not name or not sku or price is None:
+            return Response(
+                {"detail": "name, sku, and price are required fields."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        category = None
+        if category_id:
+            category = Category.objects.filter(id=category_id).first()
+
+        from django.utils.text import slugify
+        product = Product.objects.create(
+            category=category,
+            name=name,
+            slug=slugify(name),
+            sku=sku,
+            description=data.get("description", ""),
+            price=Decimal(str(price)),
+            stock=int(stock),
+            is_active=data.get("is_active", True),
+            image_url=data.get("image_url", ""),
+        )
+
+        serializer = ProductDetailSerializer(product)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class AdminProductUpdateDeleteView(APIView):
+    """
+    PATCH / DELETE /api/v1/catalogue/admin/products/<int:pk>/
+    Admin-only workflow for updating inventory stock, price, or deleting a product.
+    """
+    permission_classes = [IsAdminUser]
+
+    def patch(self, request, pk):
+        product = Product.objects.filter(pk=pk).first()
+        if not product:
+            return Response({"detail": "Product not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        data = request.data
+        if "price" in data:
+            product.price = Decimal(str(data["price"]))
+        if "stock" in data:
+            product.stock = int(data["stock"])
+        if "is_active" in data:
+            product.is_active = bool(data["is_active"])
+        if "name" in data:
+            product.name = data["name"]
+        if "description" in data:
+            product.description = data["description"]
+
+        product.save()
+        serializer = ProductDetailSerializer(product)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request, pk):
+        product = Product.objects.filter(pk=pk).first()
+        if not product:
+            return Response({"detail": "Product not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        product.is_active = False
+        product.save(update_fields=["is_active"])
+        return Response({"detail": f"Product '{product.name}' archived successfully."}, status=status.HTTP_200_OK)
+
+
+class AdminLowStockAlertsView(APIView):
+    """
+    GET /api/v1/catalogue/admin/inventory/low-stock/
+    Admin-only endpoint returning products with stock below threshold (default < 5).
+    """
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        threshold = int(request.query_params.get("threshold", 5))
+        low_stock_products = Product.objects.filter(is_active=True, stock__lt=threshold)
+        serializer = ProductListSerializer(low_stock_products, many=True)
+        return Response({
+            "threshold": threshold,
+            "total_low_stock": low_stock_products.count(),
+            "products": serializer.data,
+        }, status=status.HTTP_200_OK)

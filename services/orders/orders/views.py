@@ -1,9 +1,10 @@
 from decimal import Decimal
 from django.db import transaction
+from django.db.models import Sum, Count
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.exceptions import ValidationError
 
 from .models import Order, OrderItem, OrderStatus
@@ -192,7 +193,6 @@ class OrderStatusUpdateView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Staff can update any order; regular user can only access their own order
         if request.user.is_staff:
             order = Order.objects.filter(pk=pk).first()
         else:
@@ -211,3 +211,48 @@ class OrderStatusUpdateView(APIView):
 
         serializer = OrderSerializer(order)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+# ── ADMIN OPERATIONS ─────────────────────────────────────────────────────────
+
+class AdminAllOrdersView(APIView):
+    """
+    GET /api/v1/orders/admin/all/
+    Admin-only endpoint returning all customer orders across the platform.
+    """
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        queryset = Order.objects.all()
+        status_filter = request.query_params.get("status", "").strip()
+        if status_filter:
+            queryset = queryset.filter(status=status_filter)
+
+        serializer = OrderSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class AdminOrderMetricsView(APIView):
+    """
+    GET /api/v1/orders/admin/metrics/
+    Admin-only analytics metrics endpoint (total revenue, order counts, status breakdown).
+    """
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        total_orders = Order.objects.count()
+
+        # Revenue from non-cancelled, non-pending paid/shipped/delivered orders
+        fulfilled = Order.objects.filter(status__in=[OrderStatus.PAID, OrderStatus.SHIPPED, OrderStatus.DELIVERED])
+        total_revenue = fulfilled.aggregate(total=Sum("total_amount"))["total"] or Decimal("0.00")
+
+        # Counts by status
+        counts_by_status = {
+            st: Order.objects.filter(status=st).count() for st in OrderStatus.values
+        }
+
+        return Response({
+            "total_orders": total_orders,
+            "total_revenue": str(total_revenue),
+            "orders_by_status": counts_by_status,
+        }, status=status.HTTP_200_OK)

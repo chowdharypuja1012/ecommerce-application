@@ -8,6 +8,8 @@ from .views import (
     OrderDetailView,
     OrderCancelView,
     OrderStatusUpdateView,
+    AdminAllOrdersView,
+    AdminOrderMetricsView,
 )
 
 urlpatterns = [
@@ -19,4 +21,8 @@ urlpatterns = [
     path("api/v1/orders/<int:pk>/", OrderDetailView.as_view(), name="order-detail"),
     path("api/v1/orders/<int:pk>/cancel/", OrderCancelView.as_view(), name="order-cancel"),
     path("api/v1/orders/<int:pk>/status/", OrderStatusUpdateView.as_view(), name="order-status-update"),
+
+    # Admin Protected Routes
+    path("api/v1/orders/admin/all/", AdminAllOrdersView.as_view(), name="orders-admin-all"),
+    path("api/v1/orders/admin/metrics/", AdminOrderMetricsView.as_view(), name="orders-admin-metrics"),
 ]
