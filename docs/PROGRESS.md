@@ -11,3 +11,4 @@
 | Task 6 — Frontend shell and catalogue UI | 2026-10-04 | `npx tsx src/api/catalogueClient.test.ts`, `npm run build`, `npm run lint` | ✅ All pass | pending |
 | Task 7 — Authentication and profile | 2026-10-04 | `python manage.py check` x8, `python manage.py test tests` (accounts: 26/26), `npx tsx src/api/authClient.test.ts`, `npm run build` | ✅ All pass | pending |
 | Task 8 — Product detail, search and filters | 2026-10-04 | `npx tsx src/components/ProductDetail.test.ts`, `npm run build`, `npm run lint`, `python manage.py check` x8 | ✅ All pass | pending |
+| Task 9 — Cart backend | 2026-10-04 | `python manage.py test tests` (cart: 9/9), `python manage.py check` x8 | ✅ All pass | pending |
