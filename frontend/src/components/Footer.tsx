@@ -4,10 +4,12 @@ export const Footer: React.FC = () => {
   return (
     <footer className="site-footer" role="contentinfo" id="store-footer">
       <div className="container footer-content">
-        <p style={{ fontFamily: 'Fredoka, sans-serif', fontSize: '1.05rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.3rem' }}>
-          🌸 Maison Pastel Boutique
+        <div className="footer-logo">
+          alldae<span className="logo-dot">.</span>
+        </div>
+        <p style={{ color: '#4B5563', fontSize: '0.9rem' }}>
+          &copy; 2026 alldae. Superfruit Sparkling Beverages & Lifestyle. All rights reserved.
         </p>
-        <p>&copy; 2026 Maison Pastel. Crafted with ♡ for aesthetic living & workspace inspiration.</p>
       </div>
     </footer>
   );

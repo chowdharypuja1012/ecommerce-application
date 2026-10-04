@@ -1,57 +1,54 @@
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
-  /* Cute Pastel Palette (User Specified) */
-  --pastel-blush: #F8DDE5;
-  --pastel-butter: #FFF0B8;
-  --pastel-lavender: #E7DDF8;
-  --pastel-sage: #DCE8D5;
-  --pastel-cream: #FFF9F0;
-
-  /* Theme Core Colors */
-  --bg-primary: #FFF9F0;       /* Soft Cream base */
-  --bg-secondary: #FFFFFF;     /* Pure white cards */
-  --bg-tertiary: #F8DDE5;      /* Soft Blush background elements */
+  /* alldae. Brand Color Palette */
+  --alldae-yellow: #FFEB3B;
+  --alldae-yellow-hover: #FDD835;
+  --alldae-mint: #D0F0C0;
+  --alldae-dark: #121417;
+  --alldae-text-muted: #555E68;
+  
+  --bg-primary: #FAFAFA;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #F3F4F6;
   
   --surface-card: #FFFFFF;
   --surface-card-hover: #FFFFFF;
-  --border-subtle: rgba(231, 221, 248, 0.7);
-  --border-active: #D8B4FE;
+  --border-subtle: #E5E7EB;
+  --border-active: #121417;
 
-  /* Primary Cute Accents */
-  --accent-primary: #E87A90;       /* Warm rose pink */
-  --accent-primary-hover: #D9667E;
-  --accent-glow: rgba(232, 122, 144, 0.2);
-  --accent-secondary: #7BAE7F;     /* Sage accent */
+  /* Primary Accent Colors */
+  --accent-primary: #FFEB3B;
+  --accent-primary-hover: #FDD835;
+  --accent-glow: rgba(255, 235, 59, 0.4);
 
-  /* Text Colors (Rich Warm Espresso/Mocha for ultra-readability) */
-  --text-primary: #2D2424;       /* Deep warm dark espresso */
-  --text-secondary: #6B5B59;     /* Warm mocha grey */
-  --text-muted: #8C7A78;         /* Soft rose grey */
+  /* Text Colors */
+  --text-primary: #121417;
+  --text-secondary: #4B5563;
+  --text-muted: #6B7280;
 
   /* Status Colors */
-  --status-in-stock: #5B8C5A;
+  --status-in-stock: #16A34A;
   --status-low-stock: #D97706;
-  --status-out-stock: #E11D48;
+  --status-out-stock: #DC2626;
 
-  /* Pinterest Aesthetic Shadows & Rounded Corners */
-  --shadow-sm: 0 4px 12px rgba(180, 140, 150, 0.08);
-  --shadow-md: 0 8px 24px rgba(180, 140, 150, 0.12);
-  --shadow-lg: 0 16px 36px rgba(180, 140, 150, 0.16);
-  --shadow-pastel: 0 10px 28px rgba(232, 122, 144, 0.15);
+  /* Shadows & Rounded Shapes */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.1);
 
-  --glass-bg: rgba(255, 249, 240, 0.88);
+  --glass-bg: rgba(255, 255, 255, 0.92);
   --glass-backdrop: blur(16px);
 
-  /* Layout & Extra Rounded Shapes */
+  /* Layout */
   --radius-sm: 12px;
   --radius-md: 18px;
-  --radius-lg: 24px;
+  --radius-lg: 28px;
   --radius-pill: 9999px;
   --radius-full: 9999px;
 
-  --transition-fast: 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-  --transition-normal: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 *, *::before, *::after {
@@ -64,22 +61,23 @@ html, body {
   width: 100%;
   min-height: 100vh;
   background-color: var(--bg-primary);
-  background-image: 
-    radial-gradient(circle at 10% 20%, rgba(248, 221, 229, 0.45) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(231, 221, 248, 0.45) 0%, transparent 40%),
-    radial-gradient(circle at 50% 50%, rgba(255, 240, 184, 0.3) 0%, transparent 50%);
-  background-attachment: fixed;
   color: var(--text-primary);
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  line-height: 1.55;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Fredoka', 'Quicksand', sans-serif;
-  font-weight: 600;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
   color: var(--text-primary);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+}
+
+.serif-font, em {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
 }
 
 a {
@@ -102,27 +100,17 @@ input, select, button {
 /* Base Layout Container */
 .container {
   width: 100%;
-  max-width: 1280px;
+  max-width: 1320px;
   margin: 0 auto;
   padding: 0 1.5rem;
 }
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(12px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-@keyframes floatSoft {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-}
-
-@keyframes pulseGlow {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation: fadeIn 0.4s ease-out forwards;
 }

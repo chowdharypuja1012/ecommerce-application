@@ -14,7 +14,11 @@ export const CategoryNav: React.FC<CategoryNavProps> = ({
 }) => {
   return (
     <nav className="category-nav-wrapper" aria-label="Product Categories" id="category-navigation">
-      <div className="container">
+      <div className="container category-nav-header-row">
+        <h2 className="section-serif-title">
+          Discover <em>our range -</em>
+        </h2>
+
         <div className="category-pills">
           <button
             id="cat-pill-all"
@@ -22,7 +26,7 @@ export const CategoryNav: React.FC<CategoryNavProps> = ({
             onClick={() => onSelectCategory('')}
             type="button"
           >
-            All Products
+            Best Seller
           </button>
           {categories.map((cat) => (
             <button

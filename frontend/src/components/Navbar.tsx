@@ -28,33 +28,28 @@ export const Navbar: React.FC<NavbarProps> = ({
     <header className="navbar" role="banner">
       <div className="container navbar-inner">
         <a href="/" className="brand-logo" id="brand-logo-link">
-          <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="34" height="34" rx="12" fill="url(#logo-grad)"/>
-            <path d="M17 9C15.5 13 11 15 11 17C11 20.3137 13.6863 23 17 23C20.3137 23 23 20.3137 23 17C23 15 18.5 13 17 9Z" fill="#FFF9F0" fillOpacity="0.9"/>
-            <circle cx="17" cy="17" r="3" fill="#E87A90"/>
-            <defs>
-              <linearGradient id="logo-grad" x1="0" y1="0" x2="34" y2="34" gradientUnits="userSpaceOnUse">
-                <stop stopColor="#F8DDE5"/>
-                <stop offset="0.5" stopColor="#E7DDF8"/>
-                <stop offset="1" stopColor="#DCE8D5"/>
-              </linearGradient>
-            </defs>
-          </svg>
-          Maison Pastel <span className="brand-badge">Boutique</span>
+          alldae<span className="logo-dot">.</span>
         </a>
+
+        <nav className="nav-center-links" aria-label="Main Navigation">
+          <a href="#shop" className="nav-link">Shop All <span className="arrow-down">˅</span></a>
+          <a href="#flavours" className="nav-link">Flavours</a>
+          <a href="#about" className="nav-link">About Us</a>
+          <a href="#recipes" className="nav-link">Recipes <span className="arrow-down">˅</span></a>
+          <a href="#mission" className="nav-link">Our Mission</a>
+        </nav>
 
         <div className="nav-actions">
           {currentUser ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
               <button
                 className="user-menu-btn"
                 id="user-orders-btn"
                 onClick={onOpenOrdersModal}
                 title="View Orders History"
                 type="button"
-                style={{ padding: '0.45rem 0.75rem', fontSize: '0.85rem' }}
               >
-                📜 Orders
+                Orders
               </button>
 
               <button
@@ -81,11 +76,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
           ) : (
             <button
-              className="btn-primary"
+              className="user-menu-btn"
               id="signin-btn"
               onClick={onOpenAuthModal}
               type="button"
-              style={{ padding: '0.45rem 1rem', fontSize: '0.9rem' }}
             >
               Sign In
             </button>
@@ -101,11 +95,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               title="Saved Wishlist"
               type="button"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.78-8.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
               </svg>
               {wishlistCount > 0 && (
-                <span className="cart-count-badge" id="wishlist-count" style={{ backgroundColor: 'var(--color-accent, #ec4899)' }}>
+                <span className="cart-count-badge" id="wishlist-count">
                   {wishlistCount}
                 </span>
               )}
@@ -121,7 +115,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             title="Shopping Cart"
             type="button"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="9" cy="21" r="1"/>
               <circle cx="20" cy="21" r="1"/>
               <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
@@ -129,6 +123,16 @@ export const Navbar: React.FC<NavbarProps> = ({
             {cartCount > 0 && (
               <span className="cart-count-badge" id="cart-count">{cartCount}</span>
             )}
+          </button>
+
+          {/* Juice Up Yellow Pill Action Button */}
+          <button
+            className="btn-juice-up"
+            id="juice-up-btn"
+            onClick={onOpenCartDrawer}
+            type="button"
+          >
+            Juice Up <span className="btn-arrow">→</span>
           </button>
         </div>
       </div>
