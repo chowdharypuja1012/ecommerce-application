@@ -28,17 +28,19 @@ export const Navbar: React.FC<NavbarProps> = ({
     <header className="navbar" role="banner">
       <div className="container navbar-inner">
         <a href="/" className="brand-logo" id="brand-logo-link">
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="32" height="32" rx="8" fill="url(#logo-grad)"/>
-            <path d="M10 11L16 17L22 11M10 21L16 15L22 21" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="34" height="34" rx="12" fill="url(#logo-grad)"/>
+            <path d="M17 9C15.5 13 11 15 11 17C11 20.3137 13.6863 23 17 23C20.3137 23 23 20.3137 23 17C23 15 18.5 13 17 9Z" fill="#FFF9F0" fillOpacity="0.9"/>
+            <circle cx="17" cy="17" r="3" fill="#E87A90"/>
             <defs>
-              <linearGradient id="logo-grad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-                <stop stopColor="#6366F1"/>
-                <stop offset="1" stopColor="#4F46E5"/>
+              <linearGradient id="logo-grad" x1="0" y1="0" x2="34" y2="34" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#F8DDE5"/>
+                <stop offset="0.5" stopColor="#E7DDF8"/>
+                <stop offset="1" stopColor="#DCE8D5"/>
               </linearGradient>
             </defs>
           </svg>
-          NexusShop <span className="brand-badge">Platform</span>
+          Maison Pastel <span className="brand-badge">Boutique</span>
         </a>
 
         <div className="nav-actions">

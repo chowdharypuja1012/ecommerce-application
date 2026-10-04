@@ -4,9 +4,10 @@ export const HeroBanner: React.FC = () => {
   return (
     <section className="hero-banner" id="hero-banner">
       <div className="container">
-        <h1 className="hero-title">Explore Next-Gen Catalogue</h1>
+        <div className="hero-badge-pill">✨ The Pastel Collection 2026</div>
+        <h1 className="hero-title">Curated Lifestyle & Workspace Essentials</h1>
         <p className="hero-subtitle">
-          Discover premium products, curated categories, and real-time inventory backed by our microservices architecture.
+          Discover handcrafted ceramics, dreamy pastel tech, cozy streetwear, and aesthetic room decor for your everyday aesthetic ritual.
         </p>
       </div>
     </section>
