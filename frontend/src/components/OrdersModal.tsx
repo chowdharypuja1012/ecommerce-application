@@ -5,9 +5,10 @@ import { ordersClient } from '../api/ordersClient';
 interface OrdersModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onOpenPaymentModal?: (order: Order) => void;
 }
 
-export const OrdersModal: React.FC<OrdersModalProps> = ({ isOpen, onClose }) => {
+export const OrdersModal: React.FC<OrdersModalProps> = ({ isOpen, onClose, onOpenPaymentModal }) => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -94,6 +95,7 @@ export const OrdersModal: React.FC<OrdersModalProps> = ({ isOpen, onClose }) => 
                 const badgeStyle = getStatusBadgeClass(order.status);
                 const isExpanded = expandedOrderId === order.id;
                 const canCancel = order.status === 'PENDING' || order.status === 'PAID';
+                const canPay = order.status === 'PENDING';
 
                 return (
                   <div
@@ -137,6 +139,25 @@ export const OrdersModal: React.FC<OrdersModalProps> = ({ isOpen, onClose }) => 
                     </div>
 
                     <div style={{ marginTop: '0.8rem', display: 'flex', gap: '0.6rem', justifyContent: 'flex-end' }}>
+                      {canPay && onOpenPaymentModal && (
+                        <button
+                          className="btn-primary"
+                          onClick={() => {
+                            onClose();
+                            onOpenPaymentModal(order);
+                          }}
+                          type="button"
+                          style={{
+                            fontSize: '0.82rem',
+                            padding: '0.35rem 0.75rem',
+                            backgroundColor: '#10b981',
+                            borderColor: '#10b981',
+                          }}
+                        >
+                          💳 Pay Now (Sandbox)
+                        </button>
+                      )}
+
                       <button
                         className="btn-secondary"
                         onClick={() => setExpandedOrderId(isExpanded ? null : order.id)}

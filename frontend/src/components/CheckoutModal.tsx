@@ -10,6 +10,7 @@ interface CheckoutModalProps {
   cart: Cart | null;
   savedAddresses: Address[];
   onOrderSuccess: (order: Order) => void;
+  onOpenPaymentModal?: (order: Order) => void;
 }
 
 export const CheckoutModal: React.FC<CheckoutModalProps> = ({
@@ -18,6 +19,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   cart,
   savedAddresses,
   onOrderSuccess,
+  onOpenPaymentModal,
 }) => {
   const [selectedAddressId, setSelectedAddressId] = useState<number | 'new'>(
     savedAddresses.find((a) => a.is_default)?.id || (savedAddresses.length > 0 ? savedAddresses[0].id : 'new')
@@ -129,12 +131,27 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             </div>
 
             <div className="subtotal-row" style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-              <span>Total Amount Paid / Pending:</span>
+              <span>Total Amount Pending:</span>
               <span className="subtotal-amount">${parseFloat(placedOrder.total_amount).toFixed(2)}</span>
             </div>
 
             <div style={{ marginTop: '1.5rem', display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
-              <button className="btn-primary" onClick={onClose} type="button">
+              {onOpenPaymentModal && (
+                <button
+                  id="checkout-pay-now-btn"
+                  className="btn-primary"
+                  onClick={() => {
+                    const currentOrd = placedOrder;
+                    onClose();
+                    onOpenPaymentModal(currentOrd);
+                  }}
+                  type="button"
+                  style={{ backgroundColor: '#10b981', borderColor: '#10b981' }}
+                >
+                  💳 Pay Now (Sandbox Simulation)
+                </button>
+              )}
+              <button className="btn-secondary" onClick={onClose} type="button">
                 Continue Shopping
               </button>
             </div>

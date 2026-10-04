@@ -7,12 +7,14 @@ import type { Category, Product } from '../types/catalogue';
 import type { Address, Profile, User } from '../types/auth';
 import type { Cart } from '../types/cart';
 import type { Wishlist } from '../types/wishlist';
+import type { Order } from '../types/orders';
 
 import { AuthModal } from '../components/AuthModal';
 import { CartDrawer } from '../components/CartDrawer';
 import { WishlistDrawer } from '../components/WishlistDrawer';
 import { CheckoutModal } from '../components/CheckoutModal';
 import { OrdersModal } from '../components/OrdersModal';
+import { PaymentModal } from '../components/PaymentModal';
 import { CategoryNav } from '../components/CategoryNav';
 import { EmptyState } from '../components/EmptyState';
 import { ErrorState } from '../components/ErrorState';
@@ -51,8 +53,10 @@ export const CataloguePage: React.FC = () => {
   const [wishlistError, setWishlistError] = useState<string | null>(null);
   const [isWishlistDrawerOpen, setIsWishlistDrawerOpen] = useState<boolean>(false);
 
-  // Checkout Modal State
+  // Checkout & Payment Modal State
   const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState<boolean>(false);
+  const [paymentTargetOrder, setPaymentTargetOrder] = useState<Order | null>(null);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false);
 
   // URL-Persisted Filter & Product State
   const getUrlParams = () => {
@@ -345,6 +349,11 @@ export const CataloguePage: React.FC = () => {
     setIsCheckoutModalOpen(true);
   };
 
+  const handleOpenPaymentModalForOrder = (order: Order) => {
+    setPaymentTargetOrder(order);
+    setIsPaymentModalOpen(true);
+  };
+
   const handleSelectProduct = (product: Product) => {
     setSelectedProduct(product);
     setIsDetailModalOpen(true);
@@ -377,6 +386,7 @@ export const CataloguePage: React.FC = () => {
     setSavedAddresses([]);
     setIsProfileModalOpen(false);
     setIsOrdersModalOpen(false);
+    setIsPaymentModalOpen(false);
   };
 
   const hasActiveFilters =
@@ -497,12 +507,27 @@ export const CataloguePage: React.FC = () => {
         onOrderSuccess={() => {
           loadCart(); // Refresh empty cart after successful checkout
         }}
+        onOpenPaymentModal={handleOpenPaymentModalForOrder}
       />
 
       {/* Orders History Modal */}
       <OrdersModal
         isOpen={isOrdersModalOpen}
         onClose={() => setIsOrdersModalOpen(false)}
+        onOpenPaymentModal={handleOpenPaymentModalForOrder}
+      />
+
+      {/* Payment Sandbox Simulator Modal */}
+      <PaymentModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => {
+          setIsPaymentModalOpen(false);
+          setPaymentTargetOrder(null);
+        }}
+        order={paymentTargetOrder}
+        onPaymentSuccess={() => {
+          // Refresh order list if open
+        }}
       />
 
       {/* Product Detail Modal */}
