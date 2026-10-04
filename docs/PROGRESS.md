@@ -17,4 +17,7 @@
 | Task 12 — Checkout and address selection | 2026-10-04 | `python manage.py test tests` (orders: 6/6), `npx tsx src/api/ordersClient.test.ts`, `npm run build`, `npm run lint`, `python manage.py check` x8 | ✅ All pass | `0bdd7d1` |
 | Task 13 — Orders and order history | 2026-10-04 | `python manage.py test tests` (orders: 11/11), `npx tsx src/api/ordersClient.test.ts`, `npm run build`, `npm run lint`, `python manage.py check` x8 | ✅ All pass | `89f876f` |
 | Task 14 — Payment sandbox/simulation | 2026-10-04 | `python manage.py test tests` (payments: 7/7), `npx tsx src/api/paymentsClient.test.ts`, `npm run build`, `npm run lint`, `python manage.py check` x8 | ✅ All pass | `69e2bf5` |
-| Task 15 — Admin operations | 2026-10-04 | `python manage.py test tests` (catalogue: 32/32, orders: 14/14), `npm run build`, `npm run lint`, `python manage.py check` x8 | ✅ All pass | pending |
+| Task 15 — Admin operations | 2026-10-04 | `python manage.py test tests` (catalogue: 32/32, orders: 14/14), `npm run build`, `npm run lint`, `python manage.py check` x8 | ✅ All pass | `48c2f48` |
+| Task 16 — Reviews and ratings | 2026-10-04 | `python manage.py test tests` (reviews: 5/5), `npx tsx src/api/reviewsClient.test.ts`, `npm run build`, `npm run lint`, `python manage.py check` x8 | ✅ All pass | `d265faa` |
+
+
