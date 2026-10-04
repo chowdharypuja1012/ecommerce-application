@@ -975,4 +975,42 @@
   line-height: 1.45;
 }
 
+/* ── Accessibility & Responsive UX Polish (Task 18) ── */
+
+*:focus-visible {
+  outline: 2px solid var(--accent-primary) !important;
+  outline-offset: 2px !important;
+}
+
+@media (max-width: 640px) {
+  .review-summary-card {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .summary-left {
+    border-right: none;
+    border-bottom: 1px solid var(--border-subtle);
+    padding-right: 0;
+    padding-bottom: 0.75rem;
+  }
+
+  .cart-drawer-content {
+    max-width: 100vw;
+  }
+
+  .product-detail-modal-content {
+    margin: 1rem;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .rating-select-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
+}
+
+
 

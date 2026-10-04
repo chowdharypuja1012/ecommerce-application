@@ -20,6 +20,9 @@
 | Task 15 — Admin operations | 2026-10-04 | `python manage.py test tests` (catalogue: 32/32, orders: 14/14), `npm run build`, `npm run lint`, `python manage.py check` x8 | ✅ All pass | `48c2f48` |
 | Task 16 — Reviews and ratings | 2026-10-04 | `python manage.py test tests` (reviews: 5/5), `npx tsx src/api/reviewsClient.test.ts`, `npm run build`, `npm run lint`, `python manage.py check` x8 | ✅ All pass | `d265faa` |
 | Task 17 — Security and reliability pass | 2026-10-04 | `python manage.py test tests` across 8 microservices (112 tests total), `test_security.py`, `npm run build`, `npm run lint` | ✅ All pass | `a48f200` |
+| Task 18 — End-to-end tests and UX polish | 2026-10-04 | `npx tsx src/api/e2eCustomerJourney.test.ts` (9/9 steps), `npm run build`, `npm run lint` | ✅ All pass | `f76058a` |
+
+
 
 
 
