@@ -56,59 +56,70 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         <div className="modal-body" id="payment-sandbox-body">
           {/* Sandbox Warning Banner */}
           <div
-            className="cart-error-banner"
             style={{
-              background: 'rgba(99, 102, 241, 0.12)',
-              borderColor: 'rgba(99, 102, 241, 0.3)',
-              color: '#fff',
+              background: 'var(--ruja-pink-pale, #FFF0F5)',
+              border: '1px solid rgba(232, 160, 191, 0.4)',
+              borderRadius: '16px',
+              padding: '1rem 1.25rem',
+              color: 'var(--ruja-dark, #3D2F2F)',
               marginBottom: '1.25rem',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, fontSize: '0.95rem' }}>
               <span style={{ fontSize: '1.2rem' }}>🧪</span> Simulated Provider Sandbox Environment
             </div>
-            <p style={{ margin: '0.3rem 0 0 0', fontSize: '0.86rem', color: 'var(--color-text-muted, #94a3b8)' }}>
+            <p style={{ margin: '0.3rem 0 0 0', fontSize: '0.85rem', color: 'var(--text-secondary, #6B5E5E)', lineHeight: 1.4 }}>
               No real card credentials or financial charges are processed. Card data is strictly never collected or stored.
             </p>
           </div>
 
-          <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
+          <div style={{
+            background: '#FAF6F0',
+            border: '1px solid var(--border-subtle, rgba(232, 160, 191, 0.25))',
+            padding: '1.15rem 1.25rem',
+            borderRadius: '16px',
+            marginBottom: '1.25rem'
+          }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.92rem' }}>
-              <span style={{ color: 'var(--color-text-muted, #94a3b8)' }}>Order Number:</span>
-              <strong style={{ color: '#fff' }}>{order.order_number}</strong>
+              <span style={{ color: 'var(--text-muted, #9C8E8E)' }}>Order Number:</span>
+              <strong style={{ color: 'var(--ruja-dark, #3D2F2F)', background: 'var(--ruja-pink-light, #FFE4E1)', padding: '2px 8px', borderRadius: '6px' }}>
+                {order.order_number}
+              </strong>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.1rem', fontWeight: 700 }}>
-              <span>Total Payable Amount:</span>
-              <span style={{ color: 'var(--color-primary-light, #818cf8)' }}>₹{parseFloat(order.total_amount).toLocaleString('en-IN')} INR</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '1.05rem', fontWeight: 700, marginTop: '0.5rem' }}>
+              <span style={{ color: 'var(--ruja-dark, #3D2F2F)' }}>Total Payable Amount:</span>
+              <span style={{ color: 'var(--ruja-dark, #3D2F2F)', fontSize: '1.35rem', fontWeight: 800 }}>
+                ₹{parseFloat(order.total_amount).toLocaleString('en-IN')} INR
+              </span>
             </div>
           </div>
 
           {error && (
-            <div className="cart-error-banner" style={{ marginBottom: '1rem' }}>
-              <p>{error}</p>
+            <div className="auth-error-banner" style={{ marginBottom: '1rem' }}>
+              <p style={{ margin: 0 }}>{error}</p>
             </div>
           )}
 
           {resultTx ? (
             <div
-              className="cart-error-banner"
               style={{
-                background: resultTx.status === 'SUCCESS' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                borderColor: resultTx.status === 'SUCCESS' ? 'rgba(16, 185, 129, 0.4)' : 'rgba(239, 68, 68, 0.4)',
+                background: resultTx.status === 'SUCCESS' ? '#ECFDF5' : '#FEF2F2',
+                border: `1.5px solid ${resultTx.status === 'SUCCESS' ? '#A7F3D0' : '#FECACA'}`,
+                borderRadius: '16px',
                 textAlign: 'center',
-                padding: '1.25rem',
+                padding: '1.5rem',
               }}
             >
               <div style={{ fontSize: '2.5rem', marginBottom: '0.3rem' }}>
                 {resultTx.status === 'SUCCESS' ? '✅' : resultTx.status === 'CANCELLED' ? '🟡' : '❌'}
               </div>
-              <h3 style={{ margin: '0 0 0.25rem 0', color: '#fff' }}>
+              <h3 style={{ margin: '0 0 0.35rem 0', color: resultTx.status === 'SUCCESS' ? '#065F46' : '#991B1B', fontWeight: 700 }}>
                 Payment Status: {resultTx.status}
               </h3>
-              <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted, #94a3b8)', margin: '0 0 0.5rem 0' }}>
-                Ref Token: <code style={{ color: '#fff', background: 'rgba(0,0,0,0.3)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>{resultTx.transaction_reference}</code>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary, #6B5E5E)', margin: '0 0 0.5rem 0' }}>
+                Ref Token: <code style={{ color: 'var(--ruja-dark, #3D2F2F)', background: '#FFFFFF', padding: '0.2rem 0.5rem', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>{resultTx.transaction_reference}</code>
               </p>
-              <p style={{ fontSize: '0.9rem', color: '#fff', margin: 0 }}>
+              <p style={{ fontSize: '0.9rem', color: 'var(--ruja-dark, #3D2F2F)', margin: 0, fontWeight: 500 }}>
                 {resultTx.provider_message}
               </p>
 
@@ -118,36 +129,48 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     className="btn-secondary"
                     onClick={() => setResultTx(null)}
                     type="button"
+                    style={{ borderRadius: '9999px', padding: '0.75rem 1.25rem' }}
                   >
                     Try Another Action
                   </button>
                 )}
-                <button className="btn-primary" onClick={onClose} type="button">
-                  {resultTx.status === 'SUCCESS' ? 'Done' : 'Close'}
+                <button
+                  className="btn-primary"
+                  onClick={onClose}
+                  type="button"
+                  style={{ borderRadius: '9999px', padding: '0.75rem 1.4rem' }}
+                >
+                  {resultTx.status === 'SUCCESS' ? 'Done ✨' : 'Close'}
                 </button>
               </div>
             </div>
           ) : (
             <div>
-              <p style={{ fontSize: '0.9rem', color: 'var(--color-text-muted, #94a3b8)', marginBottom: '1rem' }}>
+              <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary, #6B5E5E)', marginBottom: '0.85rem', fontWeight: 500 }}>
                 Select a payment outcome to simulate:
               </p>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 <button
                   id="simulate-payment-success-btn"
-                  className="btn-primary"
                   disabled={loading}
                   onClick={() => handleSimulatePayment('SUCCESS')}
                   type="button"
                   style={{
-                    backgroundColor: '#10b981',
-                    borderColor: '#10b981',
+                    backgroundColor: '#D1FAE5',
+                    color: '#065F46',
+                    border: '1.5px solid #A7F3D0',
+                    borderRadius: '9999px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: '0.5rem',
-                    padding: '0.75rem',
+                    padding: '0.8rem 1.25rem',
+                    fontWeight: 700,
+                    fontSize: '0.92rem',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 8px rgba(16, 185, 129, 0.12)',
+                    transition: 'all 0.2s ease'
                   }}
                 >
                   🟢 Approve Payment (Simulate Success)
@@ -155,18 +178,23 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
                 <button
                   id="simulate-payment-fail-btn"
-                  className="btn-secondary"
                   disabled={loading}
                   onClick={() => handleSimulatePayment('FAIL')}
                   type="button"
                   style={{
-                    borderColor: '#ef4444',
-                    color: '#ef4444',
+                    backgroundColor: '#FEE2E2',
+                    color: '#991B1B',
+                    border: '1.5px solid #FECACA',
+                    borderRadius: '9999px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: '0.5rem',
-                    padding: '0.75rem',
+                    padding: '0.8rem 1.25rem',
+                    fontWeight: 700,
+                    fontSize: '0.92rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
                   }}
                 >
                   🔴 Decline Payment (Simulate Failure)
@@ -174,18 +202,23 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
                 <button
                   id="simulate-payment-cancel-btn"
-                  className="btn-secondary"
                   disabled={loading}
                   onClick={() => handleSimulatePayment('CANCEL')}
                   type="button"
                   style={{
-                    borderColor: '#f59e0b',
-                    color: '#f59e0b',
+                    backgroundColor: '#FEF3C7',
+                    color: '#92400E',
+                    border: '1.5px solid #FDE68A',
+                    borderRadius: '9999px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: '0.5rem',
-                    padding: '0.75rem',
+                    padding: '0.8rem 1.25rem',
+                    fontWeight: 700,
+                    fontSize: '0.92rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
                   }}
                 >
                   🟡 User Cancel Payment (Simulate Cancel)

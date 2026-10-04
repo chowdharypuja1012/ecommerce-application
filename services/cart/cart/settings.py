@@ -80,6 +80,7 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "DEFAULT_PARSER_CLASSES": ["rest_framework.parsers.JSONParser"],
     "DEFAULT_AUTHENTICATION_CLASSES": [
+        "cart.remote_auth.RemoteTokenAuthentication",
         "rest_framework.authentication.TokenAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ],
@@ -100,7 +101,7 @@ SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
 
-
+ACCOUNTS_SERVICE_URL = os.environ.get("ACCOUNTS_SERVICE_URL", "http://127.0.0.1:8001")
 CATALOGUE_SERVICE_URL = os.environ.get("CATALOGUE_SERVICE_URL", "http://127.0.0.1:8002")
 
 # CORS — internal service; only allow gateway

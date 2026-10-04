@@ -80,6 +80,7 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "DEFAULT_PARSER_CLASSES": ["rest_framework.parsers.JSONParser"],
     "DEFAULT_AUTHENTICATION_CLASSES": [
+        "payments.remote_auth.RemoteTokenAuthentication",
         "rest_framework.authentication.TokenAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ],
@@ -100,8 +101,8 @@ SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
 
-
-ORDERS_SERVICE_URL = os.environ.get("ORDERS_SERVICE_URL", "http://127.0.0.1:8004")
+ACCOUNTS_SERVICE_URL = os.environ.get("ACCOUNTS_SERVICE_URL", "http://127.0.0.1:8001")
+ORDERS_SERVICE_URL = os.environ.get("ORDERS_SERVICE_URL", "http://127.0.0.1:8005")
 
 # CORS — internal service; only allow gateway
 CORS_ALLOWED_ORIGINS = os.environ.get(

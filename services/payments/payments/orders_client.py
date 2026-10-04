@@ -24,7 +24,7 @@ def notify_order_payment_status(order_id: int, status: str, auth_header: str = N
         pass
 
     # 2. HTTP Request to Orders Microservice
-    orders_url = getattr(settings, "ORDERS_SERVICE_URL", "http://127.0.0.1:8004")
+    orders_url = getattr(settings, "ORDERS_SERVICE_URL", "http://127.0.0.1:8005")
     url = f"{orders_url}/api/v1/orders/{order_id}/status/"
 
     headers = {}

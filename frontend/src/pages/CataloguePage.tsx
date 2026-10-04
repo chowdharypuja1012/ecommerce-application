@@ -436,6 +436,12 @@ export const CataloguePage: React.FC = () => {
           onSelectCategory={handleCategorySelect}
         />
 
+        <div className="section-title-center-wrap">
+          <h2 className="things-you-love-title">
+            A few things you'll love <span className="sparkle-icon">✨</span>
+          </h2>
+        </div>
+
         <FilterBar
           search={search}
           minPrice={minPrice}
@@ -480,6 +486,7 @@ export const CataloguePage: React.FC = () => {
         cart={cart}
         loading={cartLoading}
         error={cartError}
+        products={products}
         onUpdateQuantity={handleUpdateCartQuantity}
         onRemoveItem={handleRemoveCartItem}
         onClearCart={handleClearCart}

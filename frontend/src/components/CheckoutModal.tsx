@@ -108,52 +108,115 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
         {placedOrder ? (
           <div className="modal-body" id="order-confirmation-view">
-            <div style={{ textAlign: 'center', padding: '1.5rem 0' }}>
-              <div style={{ fontSize: '3.5rem', marginBottom: '0.5rem' }}>📦</div>
-              <h3 style={{ fontSize: '1.4rem', color: 'var(--color-primary-light, #818cf8)' }}>
+            <div style={{ textAlign: 'center', padding: '1.25rem 0 1rem' }}>
+              <div style={{ fontSize: '3.2rem', marginBottom: '0.4rem' }}>📦</div>
+              <h3 style={{
+                fontFamily: "'Cormorant Garamond', Georgia, serif",
+                fontSize: '1.65rem',
+                fontWeight: 700,
+                color: 'var(--ruja-dark, #3D2F2F)',
+                margin: '0 0 0.4rem 0'
+              }}>
                 Thank you for your order!
               </h3>
-              <p style={{ color: 'var(--color-text-muted, #94a3b8)', marginTop: '0.25rem' }}>
-                Order Number: <strong style={{ color: '#fff' }}>{placedOrder.order_number}</strong>
+              <p style={{ color: 'var(--text-secondary, #6B5E5E)', fontSize: '0.92rem', margin: '0 0 0.5rem 0' }}>
+                Order Number: <strong style={{ color: 'var(--ruja-dark, #3D2F2F)', background: 'var(--ruja-pink-light, #FFE4E1)', padding: '2px 8px', borderRadius: '6px' }}>{placedOrder.order_number}</strong>
               </p>
-              <div className="cart-item-sku" style={{ marginTop: '0.25rem' }}>
-                Status: <span style={{ color: 'var(--color-warning, #f59e0b)', fontWeight: 600 }}>{placedOrder.status}</span>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem' }}>
+                <span style={{ color: 'var(--text-muted, #9C8E8E)' }}>Status:</span>
+                <span style={{
+                  background: '#FEF3C7',
+                  color: '#B45309',
+                  padding: '3px 10px',
+                  borderRadius: '9999px',
+                  fontWeight: 700,
+                  fontSize: '0.78rem',
+                  letterSpacing: '0.04em'
+                }}>
+                  {placedOrder.status}
+                </span>
               </div>
             </div>
 
-            <div className="cart-error-banner" style={{ background: 'rgba(99, 102, 241, 0.1)', borderColor: 'rgba(99, 102, 241, 0.3)' }}>
-              <h4 style={{ margin: '0 0 0.5rem 0', color: '#fff' }}>Shipping To:</h4>
-              <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--color-text-muted, #94a3b8)' }}>
-                {placedOrder.shipping_full_name}<br />
+            <div style={{
+              background: 'var(--ruja-pink-pale, #FFF0F5)',
+              border: '1px solid rgba(232, 160, 191, 0.35)',
+              borderRadius: '16px',
+              padding: '1.15rem 1.25rem',
+              margin: '0.5rem 0 1rem'
+            }}>
+              <h4 style={{ margin: '0 0 0.45rem 0', color: 'var(--ruja-dark, #3D2F2F)', fontSize: '0.92rem', fontWeight: 700 }}>
+                📍 Shipping To:
+              </h4>
+              <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary, #6B5E5E)', lineHeight: 1.5 }}>
+                <strong style={{ color: 'var(--ruja-dark, #3D2F2F)' }}>{placedOrder.shipping_full_name}</strong><br />
                 {placedOrder.shipping_street_address}, {placedOrder.shipping_city}, {placedOrder.shipping_state} {placedOrder.shipping_postal_code}<br />
                 {placedOrder.shipping_country}
               </p>
             </div>
 
-            <div className="subtotal-row" style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-              <span>Total Amount Pending:</span>
-              <span className="subtotal-amount">₹{parseFloat(placedOrder.total_amount).toLocaleString('en-IN')}</span>
+            <div className="subtotal-row" style={{
+              marginTop: '0.5rem',
+              paddingTop: '0.85rem',
+              borderTop: '1px solid var(--border-subtle, rgba(232, 160, 191, 0.25))',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+              <span style={{ color: 'var(--ruja-dark, #3D2F2F)', fontWeight: 600, fontSize: '1rem' }}>
+                Total Amount Pending:
+              </span>
+              <span className="subtotal-amount" style={{ color: 'var(--ruja-dark, #3D2F2F)', fontSize: '1.45rem', fontWeight: 800 }}>
+                ₹{parseFloat(placedOrder.total_amount).toLocaleString('en-IN')}
+              </span>
             </div>
 
-            <div style={{ marginTop: '1.5rem', display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+            <div style={{ marginTop: '1.25rem', display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', alignItems: 'center' }}>
+              <button
+                className="btn-secondary"
+                onClick={onClose}
+                type="button"
+                style={{
+                  padding: '0.75rem 1.3rem',
+                  borderRadius: '9999px',
+                  background: 'var(--ruja-pink-pale, #FFF0F5)',
+                  border: '1px solid rgba(232, 160, 191, 0.45)',
+                  color: 'var(--ruja-pink, #E8A0BF)',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                Continue Shopping
+              </button>
               {onOpenPaymentModal && (
                 <button
                   id="checkout-pay-now-btn"
-                  className="btn-primary"
                   onClick={() => {
                     const currentOrd = placedOrder;
                     onClose();
                     onOpenPaymentModal(currentOrd);
                   }}
                   type="button"
-                  style={{ backgroundColor: '#10b981', borderColor: '#10b981' }}
+                  style={{
+                    backgroundColor: '#D1FAE5',
+                    color: '#065F46',
+                    border: '1.5px solid #A7F3D0',
+                    borderRadius: '9999px',
+                    padding: '0.75rem 1.4rem',
+                    fontWeight: 700,
+                    fontSize: '0.92rem',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 8px rgba(16, 185, 129, 0.12)',
+                    transition: 'all 0.2s ease',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem'
+                  }}
                 >
                   💳 Pay Now (Sandbox Simulation)
                 </button>
               )}
-              <button className="btn-secondary" onClick={onClose} type="button">
-                Continue Shopping
-              </button>
             </div>
           </div>
         ) : (

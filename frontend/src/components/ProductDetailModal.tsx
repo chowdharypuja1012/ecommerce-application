@@ -114,100 +114,96 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
           </button>
         </div>
 
-        <div className="product-detail-body">
-          <div className="detail-image-wrapper">
-            <img
-              src={product.image_url || defaultImage}
-              alt={product.name}
-              className="detail-product-image"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = defaultImage;
-              }}
-            />
-            {product.category && (
-              <span className="card-category-tag">{product.category.name}</span>
-            )}
-          </div>
-
-          <div className="detail-info-col">
-            <h2 className="detail-title">{product.name}</h2>
-            <div className="detail-sku-badge">SKU: <code>{product.sku}</code></div>
-
-            <div className="detail-price-row">
-              <span className="detail-price">₹{parseFloat(product.price).toLocaleString('en-IN')}</span>
-              <span className={`stock-badge ${isOutOfStock ? 'stock-out' : 'stock-in'}`}>
-                {isOutOfStock ? 'Out of Stock' : `${product.stock} Units Available`}
-              </span>
+        <div className="product-detail-scroll-container">
+          <div className="product-detail-body">
+            <div className="detail-image-wrapper">
+              <img
+                src={product.image_url || defaultImage}
+                alt={product.name}
+                className="detail-product-image"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = defaultImage;
+                }}
+              />
+              {product.category && (
+                <span className="card-category-tag">{product.category.name}</span>
+              )}
             </div>
 
-            {reviewSummary && (
-              <div className="detail-rating-quick">
-                <div className="rating-stars">{renderStars(reviewSummary.average_rating)}</div>
-                <span className="rating-score">{reviewSummary.average_rating.toFixed(1)}</span>
-                <span className="rating-count">({reviewSummary.total_reviews} {reviewSummary.total_reviews === 1 ? 'review' : 'reviews'})</span>
+            <div className="detail-info-col">
+              <h2 className="detail-title">{product.name}</h2>
+              <div className="detail-sku-badge">SKU: <code>{product.sku}</code></div>
+
+              <div className="detail-price-row">
+                <span className="detail-price">₹{parseFloat(product.price).toLocaleString('en-IN')}</span>
+                <span className={`stock-badge ${isOutOfStock ? 'stock-out' : 'stock-in'}`}>
+                  {isOutOfStock ? 'Out of Stock' : `${product.stock} in stock`}
+                </span>
               </div>
-            )}
 
-            <div className="detail-section">
-              <h4>Description</h4>
-              <p className="detail-description">{product.description || 'No detailed description available.'}</p>
-            </div>
-
-            {!isOutOfStock && (
-              <div className="quantity-row">
-                <label htmlFor="detail-quantity">Quantity:</label>
-                <div className="quantity-controls">
-                  <button
-                    type="button"
-                    className="qty-btn"
-                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                    disabled={quantity <= 1}
-                  >
-                    -
-                  </button>
-                  <input
-                    id="detail-quantity"
-                    type="number"
-                    min="1"
-                    max={product.stock}
-                    value={quantity}
-                    onChange={(e) => setQuantity(Math.max(1, Math.min(product.stock, parseInt(e.target.value) || 1)))}
-                  />
-                  <button
-                    type="button"
-                    className="qty-btn"
-                    onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
-                    disabled={quantity >= product.stock}
-                  >
-                    +
-                  </button>
+              {reviewSummary && (
+                <div className="detail-rating-quick">
+                  <div className="rating-stars">{renderStars(reviewSummary.average_rating)}</div>
+                  <span className="rating-score">{reviewSummary.average_rating.toFixed(1)}</span>
+                  <span className="rating-count">({reviewSummary.total_reviews} {reviewSummary.total_reviews === 1 ? 'review' : 'reviews'})</span>
                 </div>
-              </div>
-            )}
+              )}
 
-            {addedNotice && (
-              <div className="add-success-banner animate-fade-in">
-                ✓ Added {quantity} item(s) to your cart!
+              <div className="detail-section">
+                <h4>Description</h4>
+                <p className="detail-description">{product.description || 'A curated aesthetic piece crafted with love.'}</p>
               </div>
-            )}
 
-            <div className="detail-actions">
-              <button
-                id="detail-add-to-cart-btn"
-                className="btn-primary btn-large"
-                disabled={isOutOfStock}
-                onClick={handleAdd}
-                type="button"
-              >
-                {isOutOfStock ? 'Currently Unavailable' : `Add ${quantity} to Cart — ₹${(parseFloat(product.price) * quantity).toLocaleString('en-IN')}`}
-              </button>
+              {!isOutOfStock && (
+                <div className="quantity-row">
+                  <label htmlFor="detail-quantity">Quantity</label>
+                  <div className="quantity-controls">
+                    <button
+                      type="button"
+                      className="qty-btn"
+                      onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                      disabled={quantity <= 1}
+                      aria-label="Decrease quantity"
+                    >
+                      −
+                    </button>
+                    <span className="qty-value">{quantity}</span>
+                    <button
+                      type="button"
+                      className="qty-btn"
+                      onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
+                      disabled={quantity >= product.stock}
+                      aria-label="Increase quantity"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {addedNotice && (
+                <div className="add-success-banner animate-fade-in">
+                  ✓ Added {quantity} item(s) to your bag!
+                </div>
+              )}
+
+              <div className="detail-actions">
+                <button
+                  id="detail-add-to-cart-btn"
+                  className="btn-primary"
+                  disabled={isOutOfStock}
+                  onClick={handleAdd}
+                  type="button"
+                >
+                  {isOutOfStock ? 'Currently Unavailable' : `Add to Bag — ₹${(parseFloat(product.price) * quantity).toLocaleString('en-IN')}`}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* ── Customer Reviews Section ── */}
-        <div className="reviews-modal-section">
-          <h3 className="reviews-section-title">Customer Reviews & Ratings</h3>
+          {/* ── Customer Reviews Section ── */}
+          <div className="reviews-modal-section">
+            <h3 className="reviews-section-title">Customer Reviews & Ratings</h3>
 
           {loadingReviews ? (
             <div className="reviews-loading">Loading customer reviews...</div>
@@ -330,6 +326,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 };
 

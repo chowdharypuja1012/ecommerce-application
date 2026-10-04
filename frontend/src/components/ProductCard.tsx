@@ -14,9 +14,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const isOutOfStock = product.stock <= 0;
   const stockClass = isOutOfStock ? 'stock-out' : 'stock-in';
-  const stockText = isOutOfStock ? 'Out of Stock' : `${product.stock} in Stock`;
+  const stockText = isOutOfStock ? 'Sold Out' : `${product.stock} left`;
 
-  const defaultImage = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200" fill="%231f293d"><rect width="300" height="200"/><text x="50%" y="50%" fill="%239ca3af" font-family="sans-serif" font-size="16" text-anchor="middle" dominant-baseline="middle">${encodeURIComponent(product.name)}</text></svg>`;
+  const defaultImage = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"><rect width="300" height="200" fill="%23FFF0F5"/><text x="50%" y="50%" fill="%23E8A0BF" font-family="serif" font-size="14" text-anchor="middle" dominant-baseline="middle">${encodeURIComponent(product.name)}</text></svg>`;
 
   const handleCardClick = () => {
     if (onSelectProduct) {
@@ -51,20 +51,19 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         >
           {product.name}
         </h3>
-        <div className="product-sku">SKU: {product.sku}</div>
-        <p className="product-desc">{product.description || 'No detailed description available.'}</p>
+        <p className="product-desc">{product.description || 'A lovely little find for you.'}</p>
 
         <div className="card-footer">
           <div className="product-price">₹{parseFloat(product.price).toLocaleString('en-IN')}</div>
-          <div style={{ display: 'flex', gap: '0.4rem' }}>
+          <div style={{ display: 'flex', gap: '0.35rem' }}>
             <button
               className="btn-secondary"
               id={`view-detail-${product.id}`}
               onClick={handleCardClick}
               type="button"
-              style={{ fontSize: '0.8rem', padding: '0.45rem 0.65rem' }}
+              style={{ fontSize: '0.78rem', padding: '0.4rem 0.6rem' }}
             >
-              Details
+              View
             </button>
             <button
               className="btn-add-cart"
@@ -73,12 +72,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               onClick={() => onAddToCart && onAddToCart(product)}
               type="button"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="9" cy="21" r="1"/>
-                <circle cx="20" cy="21" r="1"/>
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-              </svg>
-              {isOutOfStock ? 'Sold Out' : 'Add'}
+              {isOutOfStock ? 'Sold Out' : '+ Add'}
             </button>
           </div>
         </div>

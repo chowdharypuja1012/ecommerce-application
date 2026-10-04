@@ -48,49 +48,51 @@ export const OrdersModal: React.FC<OrdersModalProps> = ({ isOpen, onClose, onOpe
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case 'DELIVERED':
-        return { color: 'var(--color-success, #10b981)', bg: 'rgba(16, 185, 129, 0.15)' };
+        return { color: '#059669', bg: '#ECFDF5', border: '#A7F3D0' };
       case 'SHIPPED':
-        return { color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.15)' };
+        return { color: '#2563EB', bg: '#EFF6FF', border: '#BFDBFE' };
       case 'PAID':
-        return { color: '#8b5cf6', bg: 'rgba(139, 92, 246, 0.15)' };
+        return { color: '#7C3AED', bg: '#F5EEFF', border: '#DDD6FE' };
       case 'CANCELLED':
-        return { color: 'var(--color-danger, #ef4444)', bg: 'rgba(239, 68, 68, 0.15)' };
+        return { color: '#DC2626', bg: '#FEF2F2', border: '#FECACA' };
       default: // PENDING
-        return { color: 'var(--color-warning, #f59e0b)', bg: 'rgba(245, 158, 11, 0.15)' };
+        return { color: '#D97706', bg: '#FFFBEB', border: '#FDE68A' };
     }
   };
 
   return (
     <div className="modal-overlay" id="orders-modal-overlay" onClick={onClose}>
-      <div className="modal-content animate-fade-in" style={{ maxWidth: '720px' }} onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content animate-fade-in" style={{ maxWidth: '760px' }} onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>📜 Your Order History</h2>
+          <h2 style={{ color: 'var(--ruja-dark, #3D2F2F)', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.6rem' }}>
+            📜 Your Order History
+          </h2>
           <button className="close-btn" id="close-orders-modal" onClick={onClose} aria-label="Close modal">
             &times;
           </button>
         </div>
 
-        <div className="modal-body" id="orders-list-body">
+        <div className="modal-body" id="orders-list-body" style={{ maxHeight: '75vh', overflowY: 'auto' }}>
           {loading ? (
-            <div className="cart-loading-state">
+            <div className="cart-loading-state" style={{ padding: '3rem 0', textAlign: 'center' }}>
               <div className="spinner" />
-              <p>Fetching your order history...</p>
+              <p style={{ color: 'var(--text-secondary, #6B5B5B)', marginTop: '0.8rem' }}>Fetching your order history...</p>
             </div>
           ) : error ? (
-            <div className="cart-error-banner">
+            <div className="cart-error-banner" style={{ background: '#FEE2E2', borderColor: '#FECACA', color: '#DC2626', padding: '1rem', borderRadius: '12px' }}>
               <p>{error}</p>
             </div>
           ) : orders.length === 0 ? (
-            <div className="empty-cart-view" id="empty-orders-view">
-              <div className="empty-cart-icon">🛍️</div>
-              <h3>No Orders Found</h3>
-              <p>You haven't placed any orders yet. Start shopping and place your first order!</p>
-              <button className="btn-primary" onClick={onClose} type="button">
-                Start Shopping
+            <div className="empty-cart-view" id="empty-orders-view" style={{ padding: '3rem 1rem', textAlign: 'center' }}>
+              <div className="empty-cart-icon" style={{ fontSize: '3rem', marginBottom: '1rem' }}>🛍️</div>
+              <h3 style={{ color: 'var(--ruja-dark, #3D2F2F)', marginBottom: '0.5rem', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.5rem' }}>No Orders Found</h3>
+              <p style={{ color: 'var(--text-secondary, #6B5B5B)', marginBottom: '1.5rem' }}>You haven't placed any orders yet. Start shopping and treat yourself!</p>
+              <button className="btn-shop-now" onClick={onClose} type="button" style={{ margin: '0 auto' }}>
+                Start Shopping →
               </button>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               {orders.map((order) => {
                 const badgeStyle = getStatusBadgeClass(order.status);
                 const isExpanded = expandedOrderId === order.id;
@@ -100,45 +102,50 @@ export const OrdersModal: React.FC<OrdersModalProps> = ({ isOpen, onClose, onOpe
                 return (
                   <div
                     key={order.id}
-                    className="cart-error-banner"
                     style={{
-                      background: 'rgba(255, 255, 255, 0.03)',
-                      borderColor: 'rgba(255, 255, 255, 0.1)',
-                      color: 'inherit',
-                      padding: '1.2rem',
+                      background: '#FFFFFF',
+                      border: '1.5px solid var(--border-subtle, #F0E0E0)',
+                      borderRadius: '18px',
+                      padding: '1.35rem',
+                      boxShadow: '0 4px 14px rgba(61, 47, 47, 0.04)',
+                      transition: 'all 0.2s ease',
                     }}
                   >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    {/* Header Row */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
                       <div>
-                        <div style={{ fontWeight: 600, fontSize: '1.05rem', color: '#fff' }}>
-                          {order.order_number}
+                        <div style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--ruja-dark, #3D2F2F)', letterSpacing: '0.3px' }}>
+                          Order #{order.order_number}
                         </div>
-                        <div style={{ fontSize: '0.82rem', color: 'var(--color-text-muted, #94a3b8)', marginTop: '0.2rem' }}>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary, #6B5B5B)', marginTop: '0.25rem' }}>
                           Placed on {new Date(order.created_at).toLocaleDateString()} at {new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </div>
                       </div>
 
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
                         <span
                           style={{
-                            padding: '0.25rem 0.75rem',
+                            padding: '0.3rem 0.85rem',
                             borderRadius: '9999px',
-                            fontSize: '0.8rem',
-                            fontWeight: 600,
+                            fontSize: '0.78rem',
+                            fontWeight: 700,
+                            letterSpacing: '0.5px',
                             backgroundColor: badgeStyle.bg,
                             color: badgeStyle.color,
+                            border: `1px solid ${badgeStyle.border}`,
                           }}
                         >
                           {order.status}
                         </span>
 
-                        <span style={{ fontWeight: 700, fontSize: '1.1rem', color: '#fff' }}>
+                        <span style={{ fontWeight: 700, fontSize: '1.25rem', color: 'var(--ruja-dark, #3D2F2F)' }}>
                           ₹{parseFloat(order.total_amount).toLocaleString('en-IN')}
                         </span>
                       </div>
                     </div>
 
-                    <div style={{ marginTop: '0.8rem', display: 'flex', gap: '0.6rem', justifyContent: 'flex-end' }}>
+                    {/* Action Buttons Row */}
+                    <div style={{ marginTop: '1rem', display: 'flex', gap: '0.6rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
                       {canPay && onOpenPaymentModal && (
                         <button
                           className="btn-primary"
@@ -148,10 +155,13 @@ export const OrdersModal: React.FC<OrdersModalProps> = ({ isOpen, onClose, onOpe
                           }}
                           type="button"
                           style={{
-                            fontSize: '0.82rem',
-                            padding: '0.35rem 0.75rem',
-                            backgroundColor: '#10b981',
-                            borderColor: '#10b981',
+                            fontSize: '0.85rem',
+                            padding: '0.45rem 0.95rem',
+                            backgroundColor: '#10B981',
+                            borderColor: '#10B981',
+                            borderRadius: '9999px',
+                            fontWeight: 600,
+                            color: '#FFFFFF',
                           }}
                         >
                           💳 Pay Now (Sandbox)
@@ -159,24 +169,37 @@ export const OrdersModal: React.FC<OrdersModalProps> = ({ isOpen, onClose, onOpe
                       )}
 
                       <button
-                        className="btn-secondary"
-                        onClick={() => setExpandedOrderId(isExpanded ? null : order.id)}
                         type="button"
-                        style={{ fontSize: '0.82rem', padding: '0.35rem 0.75rem' }}
+                        onClick={() => setExpandedOrderId(isExpanded ? null : order.id)}
+                        style={{
+                          fontSize: '0.85rem',
+                          padding: '0.45rem 0.95rem',
+                          borderRadius: '9999px',
+                          background: isExpanded ? 'var(--ruja-pink, #E8A0BF)' : '#FFF0F5',
+                          color: isExpanded ? '#FFFFFF' : 'var(--ruja-pink, #E8A0BF)',
+                          border: '1px solid var(--ruja-pink-light, #F5D5E0)',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                        }}
                       >
                         {isExpanded ? 'Hide Details ▲' : 'View Details ▼'}
                       </button>
 
                       {canCancel && (
                         <button
-                          className="btn-secondary"
-                          onClick={() => handleCancelOrder(order.id)}
                           type="button"
+                          onClick={() => handleCancelOrder(order.id)}
                           style={{
-                            fontSize: '0.82rem',
-                            padding: '0.35rem 0.75rem',
-                            borderColor: 'var(--color-danger, #ef4444)',
-                            color: 'var(--color-danger, #ef4444)',
+                            fontSize: '0.85rem',
+                            padding: '0.45rem 0.95rem',
+                            borderRadius: '9999px',
+                            background: '#FEE2E2',
+                            color: '#DC2626',
+                            border: '1px solid #FECACA',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
                           }}
                         >
                           Cancel Order
@@ -186,22 +209,57 @@ export const OrdersModal: React.FC<OrdersModalProps> = ({ isOpen, onClose, onOpe
 
                     {/* Order Details Accordion */}
                     {isExpanded && (
-                      <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                        <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.92rem', color: '#fff' }}>Purchase Items:</h4>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', marginBottom: '1rem' }}>
+                      <div
+                        style={{
+                          marginTop: '1rem',
+                          paddingTop: '1rem',
+                          borderTop: '1.5px dashed var(--border-subtle, #F0E0E0)',
+                          background: '#FFFAF5',
+                          borderRadius: '12px',
+                          padding: '1rem',
+                        }}
+                      >
+                        <h4 style={{ margin: '0 0 0.6rem 0', fontSize: '0.95rem', fontWeight: 700, color: 'var(--ruja-dark, #3D2F2F)' }}>
+                          🛍️ Purchased Items:
+                        </h4>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '1rem' }}>
                           {order.items.map((item) => (
-                            <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.86rem', color: 'var(--color-text-muted, #94a3b8)' }}>
-                              <span>
-                                <strong style={{ color: '#fff' }}>{item.product_name}</strong> ({item.product_sku}) &times; {item.quantity}
+                            <div
+                              key={item.id}
+                              style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                padding: '0.5rem 0.75rem',
+                                background: '#FFFFFF',
+                                borderRadius: '10px',
+                                border: '1px solid var(--border-subtle, #F0E0E0)',
+                                fontSize: '0.9rem',
+                              }}
+                            >
+                              <div>
+                                <span style={{ fontWeight: 700, color: 'var(--ruja-dark, #3D2F2F)' }}>
+                                  {item.product_name}
+                                </span>
+                                <span style={{ color: 'var(--text-secondary, #6B5B5B)', fontSize: '0.82rem', marginLeft: '0.4rem' }}>
+                                  ({item.product_sku}) &times; {item.quantity}
+                                </span>
+                              </div>
+                              <span style={{ fontWeight: 700, color: 'var(--ruja-dark, #3D2F2F)' }}>
+                                ₹{parseFloat(item.line_total).toLocaleString('en-IN')}{' '}
+                                <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary, #6B5B5B)', fontWeight: 400 }}>
+                                  (₹{parseFloat(item.unit_price).toLocaleString('en-IN')} ea)
+                                </span>
                               </span>
-                              <span>₹{parseFloat(item.line_total).toLocaleString('en-IN')} (₹{parseFloat(item.unit_price).toLocaleString('en-IN')} ea)</span>
                             </div>
                           ))}
                         </div>
 
-                        <h4 style={{ margin: '0 0 0.25rem 0', fontSize: '0.92rem', color: '#fff' }}>Shipping Destination:</h4>
-                        <p style={{ margin: 0, fontSize: '0.86rem', color: 'var(--color-text-muted, #94a3b8)' }}>
-                          {order.shipping_full_name} | {order.shipping_street_address}, {order.shipping_city}, {order.shipping_state} {order.shipping_postal_code}, {order.shipping_country}
+                        <h4 style={{ margin: '0 0 0.35rem 0', fontSize: '0.92rem', fontWeight: 700, color: 'var(--ruja-dark, #3D2F2F)' }}>
+                          📍 Shipping Destination:
+                        </h4>
+                        <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-secondary, #6B5B5B)', lineHeight: 1.5 }}>
+                          <strong style={{ color: 'var(--ruja-dark, #3D2F2F)' }}>{order.shipping_full_name}</strong> | {order.shipping_street_address}, {order.shipping_city}, {order.shipping_state} {order.shipping_postal_code}, {order.shipping_country}
                         </p>
                       </div>
                     )}

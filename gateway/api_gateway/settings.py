@@ -58,11 +58,20 @@ WSGI_APPLICATION = "api_gateway.wsgi.application"
 # Gateway has no own database — it only proxies to services
 DATABASES = {}
 
-# CORS — narrow allowlist; never use CORS_ALLOW_ALL_ORIGINS=True in any environment
+# CORS — allow development frontend origins
 CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOWED_ORIGINS = os.environ.get(
-    "CORS_ALLOWED_ORIGINS", "http://localhost:5173"
-).split(",")
+CORS_ALLOWED_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get(
+        "CORS_ALLOWED_ORIGINS",
+        "http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://127.0.0.1:5174",
+    ).split(",")
+    if origin.strip()
+]
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^http://localhost:\d+$",
+    r"^http://127\.0\.0\.1:\d+$",
+]
 CORS_ALLOW_METHODS = [
     "DELETE",
     "GET",
