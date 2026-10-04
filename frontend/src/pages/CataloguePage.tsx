@@ -1,7 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { catalogueClient } from '../api/catalogueClient';
+import { authClient } from '../api/authClient';
 import type { Category, Product } from '../types/catalogue';
+import type { Profile, User } from '../types/auth';
 
+import { AuthModal } from '../components/AuthModal';
 import { CategoryNav } from '../components/CategoryNav';
 import { EmptyState } from '../components/EmptyState';
 import { ErrorState } from '../components/ErrorState';
@@ -12,12 +15,18 @@ import { LoadingState } from '../components/LoadingState';
 import { Navbar } from '../components/Navbar';
 import { PaginationControls } from '../components/PaginationControls';
 import { ProductGrid } from '../components/ProductGrid';
+import { ProfileModal } from '../components/ProfileModal';
 
 export const CataloguePage: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Auth & Profile State
+  const [currentUser, setCurrentUser] = useState<{ user: User; profile: Profile } | null>(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   // Filter & Pagination States
   const [selectedCategory, setSelectedCategory] = useState<string>('');
@@ -28,6 +37,19 @@ export const CataloguePage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [cartItems, setCartItems] = useState<Product[]>([]);
+
+  // Check current auth user on mount
+  useEffect(() => {
+    let isMounted = true;
+    authClient.getCurrentUser().then((userData) => {
+      if (isMounted && userData) {
+        setCurrentUser(userData);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Fetch Categories once on mount
   useEffect(() => {
@@ -111,6 +133,22 @@ export const CataloguePage: React.FC = () => {
     setCartItems((prev) => [...prev, product]);
   };
 
+  const handleAuthSuccess = (user: User, profile: Profile) => {
+    setCurrentUser({ user, profile });
+  };
+
+  const handleProfileUpdated = (updatedProfile: Profile) => {
+    if (currentUser) {
+      setCurrentUser({ user: currentUser.user, profile: updatedProfile });
+    }
+  };
+
+  const handleLogout = async () => {
+    await authClient.logout();
+    setCurrentUser(null);
+    setIsProfileModalOpen(false);
+  };
+
   const hasActiveFilters =
     Boolean(selectedCategory) ||
     Boolean(search) ||
@@ -120,7 +158,13 @@ export const CataloguePage: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <Navbar cartCount={cartItems.length} />
+      <Navbar
+        cartCount={cartItems.length}
+        currentUser={currentUser}
+        onOpenAuthModal={() => setIsAuthModalOpen(true)}
+        onOpenProfileModal={() => setIsProfileModalOpen(true)}
+        onLogout={handleLogout}
+      />
       <HeroBanner />
 
       <main className="container" style={{ flexGrow: 1 }} id="main-content">
@@ -162,6 +206,24 @@ export const CataloguePage: React.FC = () => {
       </main>
 
       <Footer />
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onAuthSuccess={handleAuthSuccess}
+      />
+
+      {/* Profile Modal */}
+      {currentUser && (
+        <ProfileModal
+          isOpen={isProfileModalOpen}
+          onClose={() => setIsProfileModalOpen(false)}
+          user={currentUser.user}
+          profile={currentUser.profile}
+          onProfileUpdated={handleProfileUpdated}
+        />
+      )}
     </div>
   );
 };
