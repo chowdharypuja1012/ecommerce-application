@@ -2,12 +2,15 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { catalogueClient } from '../api/catalogueClient';
 import { authClient } from '../api/authClient';
 import { cartClient } from '../api/cartClient';
+import { wishlistClient } from '../api/wishlistClient';
 import type { Category, Product } from '../types/catalogue';
 import type { Profile, User } from '../types/auth';
 import type { Cart } from '../types/cart';
+import type { Wishlist } from '../types/wishlist';
 
 import { AuthModal } from '../components/AuthModal';
 import { CartDrawer } from '../components/CartDrawer';
+import { WishlistDrawer } from '../components/WishlistDrawer';
 import { CategoryNav } from '../components/CategoryNav';
 import { EmptyState } from '../components/EmptyState';
 import { ErrorState } from '../components/ErrorState';
@@ -37,6 +40,12 @@ export const CataloguePage: React.FC = () => {
   const [cartLoading, setCartLoading] = useState<boolean>(false);
   const [cartError, setCartError] = useState<string | null>(null);
   const [isCartDrawerOpen, setIsCartDrawerOpen] = useState<boolean>(false);
+
+  // Wishlist State
+  const [wishlist, setWishlist] = useState<Wishlist | null>(null);
+  const [wishlistLoading, setWishlistLoading] = useState<boolean>(false);
+  const [wishlistError, setWishlistError] = useState<string | null>(null);
+  const [isWishlistDrawerOpen, setIsWishlistDrawerOpen] = useState<boolean>(false);
 
   // URL-Persisted Filter & Product State
   const getUrlParams = () => {
@@ -104,6 +113,24 @@ export const CataloguePage: React.FC = () => {
     }
   }, []);
 
+  // Fetch Wishlist from Backend
+  const loadWishlist = useCallback(async () => {
+    if (!authClient.getToken()) {
+      setWishlist(null);
+      return;
+    }
+    setWishlistLoading(true);
+    setWishlistError(null);
+    try {
+      const data = await wishlistClient.getWishlist();
+      setWishlist(data);
+    } catch (err: any) {
+      setWishlistError(err.message || 'Failed to load wishlist.');
+    } finally {
+      setWishlistLoading(false);
+    }
+  }, []);
+
   // Check current auth user on mount
   useEffect(() => {
     let isMounted = true;
@@ -111,12 +138,13 @@ export const CataloguePage: React.FC = () => {
       if (isMounted && userData) {
         setCurrentUser(userData);
         loadCart();
+        loadWishlist();
       }
     });
     return () => {
       isMounted = false;
     };
-  }, [loadCart]);
+  }, [loadCart, loadWishlist]);
 
   // Fetch Categories once on mount
   useEffect(() => {
@@ -148,7 +176,7 @@ export const CataloguePage: React.FC = () => {
           console.warn('Could not load deep-linked product:', err);
         });
     }
-  }, []);
+  }, [selectedProduct]);
 
   // Fetch Products whenever filters or pagination changes
   const loadProducts = useCallback(async () => {
@@ -177,7 +205,7 @@ export const CataloguePage: React.FC = () => {
     loadProducts();
   }, [loadProducts]);
 
-  // Handlers
+  // Filter Handlers
   const handleCategorySelect = (slug: string) => {
     setSelectedCategory(slug);
     setCurrentPage(1);
@@ -212,6 +240,7 @@ export const CataloguePage: React.FC = () => {
     setCurrentPage(1);
   };
 
+  // Cart Handlers
   const handleAddToCart = async (product: Product, quantity = 1) => {
     if (!currentUser) {
       setIsAuthModalOpen(true);
@@ -255,6 +284,39 @@ export const CataloguePage: React.FC = () => {
     }
   };
 
+  // Wishlist Handlers
+  const handleRemoveWishlistItem = async (itemId: number) => {
+    try {
+      const updatedWishlist = await wishlistClient.removeItem(itemId);
+      setWishlist(updatedWishlist);
+    } catch (err: any) {
+      alert(err.message || 'Could not remove wishlist item.');
+    }
+  };
+
+  const handleMoveWishlistToCart = async (productId: number, itemId: number) => {
+    try {
+      const updatedCart = await cartClient.addItem(productId, 1);
+      setCart(updatedCart);
+      const updatedWishlist = await wishlistClient.removeItem(itemId);
+      setWishlist(updatedWishlist);
+      setIsWishlistDrawerOpen(false);
+      setIsCartDrawerOpen(true);
+    } catch (err: any) {
+      alert(err.message || 'Could not move item to cart.');
+    }
+  };
+
+  const handleClearWishlist = async () => {
+    if (!confirm('Are you sure you want to clear your wishlist?')) return;
+    try {
+      const updatedWishlist = await wishlistClient.clearWishlist();
+      setWishlist(updatedWishlist);
+    } catch (err: any) {
+      alert(err.message || 'Could not clear wishlist.');
+    }
+  };
+
   const handleSelectProduct = (product: Product) => {
     setSelectedProduct(product);
     setIsDetailModalOpen(true);
@@ -268,6 +330,7 @@ export const CataloguePage: React.FC = () => {
   const handleAuthSuccess = (user: User, profile: Profile) => {
     setCurrentUser({ user, profile });
     loadCart();
+    loadWishlist();
   };
 
   const handleProfileUpdated = (updatedProfile: Profile) => {
@@ -280,6 +343,7 @@ export const CataloguePage: React.FC = () => {
     await authClient.logout();
     setCurrentUser(null);
     setCart(null);
+    setWishlist(null);
     setIsProfileModalOpen(false);
   };
 
@@ -294,6 +358,7 @@ export const CataloguePage: React.FC = () => {
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Navbar
         cartCount={cart?.total_items || 0}
+        wishlistCount={wishlist?.total_items || 0}
         currentUser={currentUser}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
         onOpenProfileModal={() => setIsProfileModalOpen(true)}
@@ -302,6 +367,13 @@ export const CataloguePage: React.FC = () => {
             setIsAuthModalOpen(true);
           } else {
             setIsCartDrawerOpen(true);
+          }
+        }}
+        onOpenWishlistDrawer={() => {
+          if (!currentUser) {
+            setIsAuthModalOpen(true);
+          } else {
+            setIsWishlistDrawerOpen(true);
           }
         }}
         onLogout={handleLogout}
@@ -363,6 +435,18 @@ export const CataloguePage: React.FC = () => {
         onRemoveItem={handleRemoveCartItem}
         onClearCart={handleClearCart}
         onProceedToCheckout={() => alert('Proceeding to Checkout... (Orders Service Task)')}
+      />
+
+      {/* Wishlist Drawer Slide-out */}
+      <WishlistDrawer
+        isOpen={isWishlistDrawerOpen}
+        onClose={() => setIsWishlistDrawerOpen(false)}
+        wishlist={wishlist}
+        loading={wishlistLoading}
+        error={wishlistError}
+        onRemoveItem={handleRemoveWishlistItem}
+        onMoveToCart={handleMoveWishlistToCart}
+        onClearWishlist={handleClearWishlist}
       />
 
       {/* Product Detail Modal */}

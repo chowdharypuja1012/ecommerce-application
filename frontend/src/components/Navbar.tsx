@@ -3,19 +3,23 @@ import type { User, Profile } from '../types/auth';
 
 interface NavbarProps {
   cartCount?: number;
+  wishlistCount?: number;
   currentUser: { user: User; profile: Profile } | null;
   onOpenAuthModal: () => void;
   onOpenProfileModal: () => void;
   onOpenCartDrawer: () => void;
+  onOpenWishlistDrawer?: () => void;
   onLogout: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   cartCount = 0,
+  wishlistCount = 0,
   currentUser,
   onOpenAuthModal,
   onOpenProfileModal,
   onOpenCartDrawer,
+  onOpenWishlistDrawer,
   onLogout,
 }) => {
   return (
@@ -72,6 +76,28 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           )}
 
+          {/* Wishlist Icon Button */}
+          {onOpenWishlistDrawer && (
+            <button
+              className="cart-icon-btn"
+              id="wishlist-btn"
+              onClick={onOpenWishlistDrawer}
+              aria-label={`Wishlist with ${wishlistCount} items`}
+              title="Saved Wishlist"
+              type="button"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.78-8.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+              {wishlistCount > 0 && (
+                <span className="cart-count-badge" id="wishlist-count" style={{ backgroundColor: 'var(--color-accent, #ec4899)' }}>
+                  {wishlistCount}
+                </span>
+              )}
+            </button>
+          )}
+
+          {/* Cart Icon Button */}
           <button
             className="cart-icon-btn"
             id="cart-btn"

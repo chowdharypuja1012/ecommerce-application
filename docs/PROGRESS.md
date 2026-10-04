@@ -12,4 +12,5 @@
 | Task 7 — Authentication and profile | 2026-10-04 | `python manage.py check` x8, `python manage.py test tests` (accounts: 26/26), `npx tsx src/api/authClient.test.ts`, `npm run build` | ✅ All pass | pending |
 | Task 8 — Product detail, search and filters | 2026-10-04 | `npx tsx src/components/ProductDetail.test.ts`, `npm run build`, `npm run lint`, `python manage.py check` x8 | ✅ All pass | pending |
 | Task 9 — Cart backend | 2026-10-04 | `python manage.py test tests` (cart: 9/9), `python manage.py check` x8 | ✅ All pass | pending |
-| Task 10 — Cart frontend | 2026-10-04 | `npx tsx src/api/cartClient.test.ts`, `npm run build`, `npm run lint`, `python manage.py check` x8 | ✅ All pass | pending |
+| Task 10 — Cart frontend | 2026-10-04 | `npx tsx src/api/cartClient.test.ts`, `npm run build`, `npm run lint`, `python manage.py check` x8 | ✅ All pass | `b191f9f` |
+| Task 11 — Wishlist | 2026-10-04 | `python manage.py test tests` (wishlist: 8/8), `npx tsx src/api/wishlistClient.test.ts`, `npm run build`, `npm run lint`, `python manage.py check` x8 | ✅ All pass | pending |
