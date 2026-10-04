@@ -6,6 +6,7 @@ interface NavbarProps {
   currentUser: { user: User; profile: Profile } | null;
   onOpenAuthModal: () => void;
   onOpenProfileModal: () => void;
+  onOpenCartDrawer: () => void;
   onLogout: () => void;
 }
 
@@ -14,6 +15,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   currentUser,
   onOpenAuthModal,
   onOpenProfileModal,
+  onOpenCartDrawer,
   onLogout,
 }) => {
   return (
@@ -73,6 +75,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             className="cart-icon-btn"
             id="cart-btn"
+            onClick={onOpenCartDrawer}
             aria-label={`Shopping Cart with ${cartCount} items`}
             title="Shopping Cart"
             type="button"

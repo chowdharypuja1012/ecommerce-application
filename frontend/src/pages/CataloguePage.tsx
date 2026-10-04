@@ -1,10 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { catalogueClient } from '../api/catalogueClient';
 import { authClient } from '../api/authClient';
+import { cartClient } from '../api/cartClient';
 import type { Category, Product } from '../types/catalogue';
 import type { Profile, User } from '../types/auth';
+import type { Cart } from '../types/cart';
 
 import { AuthModal } from '../components/AuthModal';
+import { CartDrawer } from '../components/CartDrawer';
 import { CategoryNav } from '../components/CategoryNav';
 import { EmptyState } from '../components/EmptyState';
 import { ErrorState } from '../components/ErrorState';
@@ -29,6 +32,12 @@ export const CataloguePage: React.FC = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
+  // Cart State
+  const [cart, setCart] = useState<Cart | null>(null);
+  const [cartLoading, setCartLoading] = useState<boolean>(false);
+  const [cartError, setCartError] = useState<string | null>(null);
+  const [isCartDrawerOpen, setIsCartDrawerOpen] = useState<boolean>(false);
+
   // URL-Persisted Filter & Product State
   const getUrlParams = () => {
     if (typeof window === 'undefined') return new URLSearchParams();
@@ -43,7 +52,6 @@ export const CataloguePage: React.FC = () => {
   const [ordering, setOrdering] = useState<string>(initialParams.get('ordering') || '-created_at');
   const [currentPage, setCurrentPage] = useState<number>(parseInt(initialParams.get('page') || '1', 10));
   const [totalPages, setTotalPages] = useState<number>(1);
-  const [cartItems, setCartItems] = useState<Product[]>([]);
 
   // Product Detail Selection State
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -78,18 +86,37 @@ export const CataloguePage: React.FC = () => {
     });
   }, [selectedCategory, search, minPrice, maxPrice, ordering, currentPage, selectedProduct, updateUrlParams]);
 
+  // Fetch Cart from Backend
+  const loadCart = useCallback(async () => {
+    if (!authClient.getToken()) {
+      setCart(null);
+      return;
+    }
+    setCartLoading(true);
+    setCartError(null);
+    try {
+      const data = await cartClient.getCart();
+      setCart(data);
+    } catch (err: any) {
+      setCartError(err.message || 'Failed to load shopping cart.');
+    } finally {
+      setCartLoading(false);
+    }
+  }, []);
+
   // Check current auth user on mount
   useEffect(() => {
     let isMounted = true;
     authClient.getCurrentUser().then((userData) => {
       if (isMounted && userData) {
         setCurrentUser(userData);
+        loadCart();
       }
     });
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [loadCart]);
 
   // Fetch Categories once on mount
   useEffect(() => {
@@ -185,8 +212,47 @@ export const CataloguePage: React.FC = () => {
     setCurrentPage(1);
   };
 
-  const handleAddToCart = (product: Product, quantity = 1) => {
-    setCartItems((prev) => [...prev, ...Array(quantity).fill(product)]);
+  const handleAddToCart = async (product: Product, quantity = 1) => {
+    if (!currentUser) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    try {
+      const updatedCart = await cartClient.addItem(product.id, quantity);
+      setCart(updatedCart);
+      setIsCartDrawerOpen(true);
+    } catch (err: any) {
+      alert(err.message || 'Could not add item to cart.');
+    }
+  };
+
+  const handleUpdateCartQuantity = async (itemId: number, newQuantity: number) => {
+    try {
+      const updatedCart = await cartClient.updateItemQuantity(itemId, newQuantity);
+      setCart(updatedCart);
+    } catch (err: any) {
+      alert(err.message || 'Could not update quantity.');
+    }
+  };
+
+  const handleRemoveCartItem = async (itemId: number) => {
+    try {
+      const updatedCart = await cartClient.removeItem(itemId);
+      setCart(updatedCart);
+    } catch (err: any) {
+      alert(err.message || 'Could not remove item.');
+    }
+  };
+
+  const handleClearCart = async () => {
+    if (!confirm('Are you sure you want to clear your cart?')) return;
+    try {
+      const updatedCart = await cartClient.clearCart();
+      setCart(updatedCart);
+    } catch (err: any) {
+      alert(err.message || 'Could not clear cart.');
+    }
   };
 
   const handleSelectProduct = (product: Product) => {
@@ -201,6 +267,7 @@ export const CataloguePage: React.FC = () => {
 
   const handleAuthSuccess = (user: User, profile: Profile) => {
     setCurrentUser({ user, profile });
+    loadCart();
   };
 
   const handleProfileUpdated = (updatedProfile: Profile) => {
@@ -212,6 +279,7 @@ export const CataloguePage: React.FC = () => {
   const handleLogout = async () => {
     await authClient.logout();
     setCurrentUser(null);
+    setCart(null);
     setIsProfileModalOpen(false);
   };
 
@@ -225,10 +293,17 @@ export const CataloguePage: React.FC = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Navbar
-        cartCount={cartItems.length}
+        cartCount={cart?.total_items || 0}
         currentUser={currentUser}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
         onOpenProfileModal={() => setIsProfileModalOpen(true)}
+        onOpenCartDrawer={() => {
+          if (!currentUser) {
+            setIsAuthModalOpen(true);
+          } else {
+            setIsCartDrawerOpen(true);
+          }
+        }}
         onLogout={handleLogout}
       />
       <HeroBanner />
@@ -276,6 +351,19 @@ export const CataloguePage: React.FC = () => {
       </main>
 
       <Footer />
+
+      {/* Cart Drawer Slide-out */}
+      <CartDrawer
+        isOpen={isCartDrawerOpen}
+        onClose={() => setIsCartDrawerOpen(false)}
+        cart={cart}
+        loading={cartLoading}
+        error={cartError}
+        onUpdateQuantity={handleUpdateCartQuantity}
+        onRemoveItem={handleRemoveCartItem}
+        onClearCart={handleClearCart}
+        onProceedToCheckout={() => alert('Proceeding to Checkout... (Orders Service Task)')}
+      />
 
       {/* Product Detail Modal */}
       <ProductDetailModal
