@@ -4,13 +4,14 @@ import { authClient } from '../api/authClient';
 import { cartClient } from '../api/cartClient';
 import { wishlistClient } from '../api/wishlistClient';
 import type { Category, Product } from '../types/catalogue';
-import type { Profile, User } from '../types/auth';
+import type { Address, Profile, User } from '../types/auth';
 import type { Cart } from '../types/cart';
 import type { Wishlist } from '../types/wishlist';
 
 import { AuthModal } from '../components/AuthModal';
 import { CartDrawer } from '../components/CartDrawer';
 import { WishlistDrawer } from '../components/WishlistDrawer';
+import { CheckoutModal } from '../components/CheckoutModal';
 import { CategoryNav } from '../components/CategoryNav';
 import { EmptyState } from '../components/EmptyState';
 import { ErrorState } from '../components/ErrorState';
@@ -30,8 +31,9 @@ export const CataloguePage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Auth & Profile State
+  // Auth, Profile & Address State
   const [currentUser, setCurrentUser] = useState<{ user: User; profile: Profile } | null>(null);
+  const [savedAddresses, setSavedAddresses] = useState<Address[]>([]);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
@@ -46,6 +48,9 @@ export const CataloguePage: React.FC = () => {
   const [wishlistLoading, setWishlistLoading] = useState<boolean>(false);
   const [wishlistError, setWishlistError] = useState<string | null>(null);
   const [isWishlistDrawerOpen, setIsWishlistDrawerOpen] = useState<boolean>(false);
+
+  // Checkout Modal State
+  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState<boolean>(false);
 
   // URL-Persisted Filter & Product State
   const getUrlParams = () => {
@@ -131,6 +136,17 @@ export const CataloguePage: React.FC = () => {
     }
   }, []);
 
+  // Fetch User Addresses
+  const loadAddresses = useCallback(async () => {
+    if (!authClient.getToken()) return;
+    try {
+      const addrs = await authClient.getAddresses();
+      setSavedAddresses(addrs);
+    } catch (err) {
+      console.warn('Could not load user addresses:', err);
+    }
+  }, []);
+
   // Check current auth user on mount
   useEffect(() => {
     let isMounted = true;
@@ -139,12 +155,13 @@ export const CataloguePage: React.FC = () => {
         setCurrentUser(userData);
         loadCart();
         loadWishlist();
+        loadAddresses();
       }
     });
     return () => {
       isMounted = false;
     };
-  }, [loadCart, loadWishlist]);
+  }, [loadCart, loadWishlist, loadAddresses]);
 
   // Fetch Categories once on mount
   useEffect(() => {
@@ -317,6 +334,15 @@ export const CataloguePage: React.FC = () => {
     }
   };
 
+  const handleProceedToCheckout = () => {
+    if (!currentUser) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+    setIsCartDrawerOpen(false);
+    setIsCheckoutModalOpen(true);
+  };
+
   const handleSelectProduct = (product: Product) => {
     setSelectedProduct(product);
     setIsDetailModalOpen(true);
@@ -331,11 +357,13 @@ export const CataloguePage: React.FC = () => {
     setCurrentUser({ user, profile });
     loadCart();
     loadWishlist();
+    loadAddresses();
   };
 
   const handleProfileUpdated = (updatedProfile: Profile) => {
     if (currentUser) {
       setCurrentUser({ user: currentUser.user, profile: updatedProfile });
+      loadAddresses();
     }
   };
 
@@ -344,6 +372,7 @@ export const CataloguePage: React.FC = () => {
     setCurrentUser(null);
     setCart(null);
     setWishlist(null);
+    setSavedAddresses([]);
     setIsProfileModalOpen(false);
   };
 
@@ -434,7 +463,7 @@ export const CataloguePage: React.FC = () => {
         onUpdateQuantity={handleUpdateCartQuantity}
         onRemoveItem={handleRemoveCartItem}
         onClearCart={handleClearCart}
-        onProceedToCheckout={() => alert('Proceeding to Checkout... (Orders Service Task)')}
+        onProceedToCheckout={handleProceedToCheckout}
       />
 
       {/* Wishlist Drawer Slide-out */}
@@ -447,6 +476,17 @@ export const CataloguePage: React.FC = () => {
         onRemoveItem={handleRemoveWishlistItem}
         onMoveToCart={handleMoveWishlistToCart}
         onClearWishlist={handleClearWishlist}
+      />
+
+      {/* Checkout & Address Selection Modal */}
+      <CheckoutModal
+        isOpen={isCheckoutModalOpen}
+        onClose={() => setIsCheckoutModalOpen(false)}
+        cart={cart}
+        savedAddresses={savedAddresses}
+        onOrderSuccess={() => {
+          loadCart(); // Refresh empty cart after successful checkout
+        }}
       />
 
       {/* Product Detail Modal */}
