@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import ValidationError
 
 from .models import Order, OrderItem, OrderStatus
 from .serializers import OrderSerializer, CheckoutInputSerializer
@@ -148,5 +149,65 @@ class OrderDetailView(APIView):
                 {"detail": "Order not found or access denied."},
                 status=status.HTTP_404_NOT_FOUND,
             )
+        serializer = OrderSerializer(order)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class OrderCancelView(APIView):
+    """
+    POST /api/v1/orders/<int:pk>/cancel/
+    Allows customer to cancel an eligible order (PENDING or PAID status).
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        order = Order.objects.filter(pk=pk, user=request.user).first()
+        if not order:
+            return Response(
+                {"detail": "Order not found or access denied."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        try:
+            order.transition_to(OrderStatus.CANCELLED)
+        except ValidationError as err:
+            return Response(err.detail, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = OrderSerializer(order)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class OrderStatusUpdateView(APIView):
+    """
+    PATCH /api/v1/orders/<int:pk>/status/
+    Updates order status validating state transitions.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, pk):
+        new_status = request.data.get("status")
+        if not new_status or new_status not in OrderStatus.values:
+            return Response(
+                {"status": f"Invalid status choices: {OrderStatus.values}"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Staff can update any order; regular user can only access their own order
+        if request.user.is_staff:
+            order = Order.objects.filter(pk=pk).first()
+        else:
+            order = Order.objects.filter(pk=pk, user=request.user).first()
+
+        if not order:
+            return Response(
+                {"detail": "Order not found or access denied."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        try:
+            order.transition_to(new_status)
+        except ValidationError as err:
+            return Response(err.detail, status=status.HTTP_400_BAD_REQUEST)
+
         serializer = OrderSerializer(order)
         return Response(serializer.data, status=status.HTTP_200_OK)

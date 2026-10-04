@@ -67,4 +67,21 @@ export const ordersClient = {
     }
     return await response.json();
   },
+
+  /**
+   * Cancels a customer's pending or paid order.
+   */
+  async cancelOrder(orderId: number): Promise<Order> {
+    const response = await fetch(`${BASE_URL}/api/v1/orders/${orderId}/cancel/`, {
+      method: 'POST',
+      headers: authClient.getAuthHeaders(),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      const msg = typeof data === 'object' ? Object.values(data).flat().join(' ') : 'Failed to cancel order.';
+      throw new Error(msg || 'Failed to cancel order.');
+    }
+    return data;
+  },
 };

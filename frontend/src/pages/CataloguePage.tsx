@@ -12,6 +12,7 @@ import { AuthModal } from '../components/AuthModal';
 import { CartDrawer } from '../components/CartDrawer';
 import { WishlistDrawer } from '../components/WishlistDrawer';
 import { CheckoutModal } from '../components/CheckoutModal';
+import { OrdersModal } from '../components/OrdersModal';
 import { CategoryNav } from '../components/CategoryNav';
 import { EmptyState } from '../components/EmptyState';
 import { ErrorState } from '../components/ErrorState';
@@ -36,6 +37,7 @@ export const CataloguePage: React.FC = () => {
   const [savedAddresses, setSavedAddresses] = useState<Address[]>([]);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isOrdersModalOpen, setIsOrdersModalOpen] = useState(false);
 
   // Cart State
   const [cart, setCart] = useState<Cart | null>(null);
@@ -374,6 +376,7 @@ export const CataloguePage: React.FC = () => {
     setWishlist(null);
     setSavedAddresses([]);
     setIsProfileModalOpen(false);
+    setIsOrdersModalOpen(false);
   };
 
   const hasActiveFilters =
@@ -403,6 +406,13 @@ export const CataloguePage: React.FC = () => {
             setIsAuthModalOpen(true);
           } else {
             setIsWishlistDrawerOpen(true);
+          }
+        }}
+        onOpenOrdersModal={() => {
+          if (!currentUser) {
+            setIsAuthModalOpen(true);
+          } else {
+            setIsOrdersModalOpen(true);
           }
         }}
         onLogout={handleLogout}
@@ -487,6 +497,12 @@ export const CataloguePage: React.FC = () => {
         onOrderSuccess={() => {
           loadCart(); // Refresh empty cart after successful checkout
         }}
+      />
+
+      {/* Orders History Modal */}
+      <OrdersModal
+        isOpen={isOrdersModalOpen}
+        onClose={() => setIsOrdersModalOpen(false)}
       />
 
       {/* Product Detail Modal */}

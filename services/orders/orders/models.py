@@ -2,6 +2,7 @@ import uuid
 from decimal import Decimal
 from django.db import models
 from django.contrib.auth import get_user_model
+from rest_framework.exceptions import ValidationError
 
 User = get_user_model()
 
@@ -16,6 +17,16 @@ class OrderStatus(models.TextChoices):
 
 def generate_order_number():
     return f"ORD-{uuid.uuid4().hex[:12].upper()}"
+
+
+# Allowed status transitions map
+ALLOWED_TRANSITIONS = {
+    OrderStatus.PENDING: [OrderStatus.PAID, OrderStatus.CANCELLED],
+    OrderStatus.PAID: [OrderStatus.SHIPPED, OrderStatus.CANCELLED],
+    OrderStatus.SHIPPED: [OrderStatus.DELIVERED],
+    OrderStatus.DELIVERED: [],
+    OrderStatus.CANCELLED: [],
+}
 
 
 class Order(models.Model):
@@ -45,6 +56,26 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Order {self.order_number} ({self.user.username}) - {self.status}"
+
+    def can_transition_to(self, new_status: str) -> bool:
+        """Checks if transition from current status to target status is valid."""
+        allowed = ALLOWED_TRANSITIONS.get(self.status, [])
+        return new_status in allowed
+
+    def transition_to(self, new_status: str):
+        """
+        Executes order status transition. Raises ValidationError if transition is illegal.
+        """
+        if self.status == new_status:
+            return  # No-op if status is unchanged
+
+        if not self.can_transition_to(new_status):
+            raise ValidationError(
+                {"status": f"Invalid status transition from '{self.status}' to '{new_status}'."}
+            )
+
+        self.status = new_status
+        self.save(update_fields=["status", "updated_at"])
 
 
 class OrderItem(models.Model):

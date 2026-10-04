@@ -9,6 +9,7 @@ interface NavbarProps {
   onOpenProfileModal: () => void;
   onOpenCartDrawer: () => void;
   onOpenWishlistDrawer?: () => void;
+  onOpenOrdersModal?: () => void;
   onLogout: () => void;
 }
 
@@ -20,6 +21,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenProfileModal,
   onOpenCartDrawer,
   onOpenWishlistDrawer,
+  onOpenOrdersModal,
   onLogout,
 }) => {
   return (
@@ -42,6 +44,17 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="nav-actions">
           {currentUser ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <button
+                className="user-menu-btn"
+                id="user-orders-btn"
+                onClick={onOpenOrdersModal}
+                title="View Orders History"
+                type="button"
+                style={{ padding: '0.45rem 0.75rem', fontSize: '0.85rem' }}
+              >
+                📜 Orders
+              </button>
+
               <button
                 className="user-menu-btn"
                 id="user-profile-btn"
