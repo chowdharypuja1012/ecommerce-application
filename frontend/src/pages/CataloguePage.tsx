@@ -14,6 +14,7 @@ import { HeroBanner } from '../components/HeroBanner';
 import { LoadingState } from '../components/LoadingState';
 import { Navbar } from '../components/Navbar';
 import { PaginationControls } from '../components/PaginationControls';
+import { ProductDetailModal } from '../components/ProductDetailModal';
 import { ProductGrid } from '../components/ProductGrid';
 import { ProfileModal } from '../components/ProfileModal';
 
@@ -28,15 +29,54 @@ export const CataloguePage: React.FC = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
-  // Filter & Pagination States
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [search, setSearch] = useState<string>('');
-  const [minPrice, setMinPrice] = useState<string>('');
-  const [maxPrice, setMaxPrice] = useState<string>('');
-  const [ordering, setOrdering] = useState<string>('-created_at');
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  // URL-Persisted Filter & Product State
+  const getUrlParams = () => {
+    if (typeof window === 'undefined') return new URLSearchParams();
+    return new URLSearchParams(window.location.search);
+  };
+
+  const initialParams = getUrlParams();
+  const [selectedCategory, setSelectedCategory] = useState<string>(initialParams.get('category') || '');
+  const [search, setSearch] = useState<string>(initialParams.get('search') || '');
+  const [minPrice, setMinPrice] = useState<string>(initialParams.get('min_price') || '');
+  const [maxPrice, setMaxPrice] = useState<string>(initialParams.get('max_price') || '');
+  const [ordering, setOrdering] = useState<string>(initialParams.get('ordering') || '-created_at');
+  const [currentPage, setCurrentPage] = useState<number>(parseInt(initialParams.get('page') || '1', 10));
   const [totalPages, setTotalPages] = useState<number>(1);
   const [cartItems, setCartItems] = useState<Product[]>([]);
+
+  // Product Detail Selection State
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState<boolean>(false);
+
+  // Synchronize state with URL Query Params
+  const updateUrlParams = useCallback((newParams: Record<string, string | number | null>) => {
+    if (typeof window === 'undefined') return;
+    const url = new URL(window.location.href);
+
+    Object.entries(newParams).forEach(([key, value]) => {
+      if (value === null || value === '' || (key === 'page' && value === 1) || (key === 'ordering' && value === '-created_at')) {
+        url.searchParams.delete(key);
+      } else {
+        url.searchParams.set(key, String(value));
+      }
+    });
+
+    window.history.pushState({}, '', url.toString());
+  }, []);
+
+  // Sync state changes to URL
+  useEffect(() => {
+    updateUrlParams({
+      category: selectedCategory,
+      search,
+      min_price: minPrice,
+      max_price: maxPrice,
+      ordering,
+      page: currentPage,
+      product: selectedProduct ? selectedProduct.slug : null,
+    });
+  }, [selectedCategory, search, minPrice, maxPrice, ordering, currentPage, selectedProduct, updateUrlParams]);
 
   // Check current auth user on mount
   useEffect(() => {
@@ -65,6 +105,22 @@ export const CataloguePage: React.FC = () => {
     return () => {
       isMounted = false;
     };
+  }, []);
+
+  // Handle deep-linked product detail via ?product=slug
+  useEffect(() => {
+    const productSlug = getUrlParams().get('product');
+    if (productSlug && !selectedProduct) {
+      catalogueClient
+        .getProductBySlug(productSlug)
+        .then((prod) => {
+          setSelectedProduct(prod);
+          setIsDetailModalOpen(true);
+        })
+        .catch((err) => {
+          console.warn('Could not load deep-linked product:', err);
+        });
+    }
   }, []);
 
   // Fetch Products whenever filters or pagination changes
@@ -129,8 +185,18 @@ export const CataloguePage: React.FC = () => {
     setCurrentPage(1);
   };
 
-  const handleAddToCart = (product: Product) => {
-    setCartItems((prev) => [...prev, product]);
+  const handleAddToCart = (product: Product, quantity = 1) => {
+    setCartItems((prev) => [...prev, ...Array(quantity).fill(product)]);
+  };
+
+  const handleSelectProduct = (product: Product) => {
+    setSelectedProduct(product);
+    setIsDetailModalOpen(true);
+  };
+
+  const handleCloseDetailModal = () => {
+    setIsDetailModalOpen(false);
+    setSelectedProduct(null);
   };
 
   const handleAuthSuccess = (user: User, profile: Profile) => {
@@ -195,7 +261,11 @@ export const CataloguePage: React.FC = () => {
           <EmptyState onResetFilters={handleResetFilters} />
         ) : (
           <>
-            <ProductGrid products={products} onAddToCart={handleAddToCart} />
+            <ProductGrid
+              products={products}
+              onAddToCart={(prod) => handleAddToCart(prod, 1)}
+              onSelectProduct={handleSelectProduct}
+            />
             <PaginationControls
               currentPage={currentPage}
               totalPages={totalPages}
@@ -206,6 +276,14 @@ export const CataloguePage: React.FC = () => {
       </main>
 
       <Footer />
+
+      {/* Product Detail Modal */}
+      <ProductDetailModal
+        product={selectedProduct}
+        isOpen={isDetailModalOpen}
+        onClose={handleCloseDetailModal}
+        onAddToCart={handleAddToCart}
+      />
 
       {/* Auth Modal */}
       <AuthModal
