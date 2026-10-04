@@ -1,99 +1,68 @@
-# Architecture — Shop Platform Microservices
+# Architecture & Context Map — Shop Platform
 
-## 1. Context Diagram
+## 1. High-Level System Architecture
 
-```
-                        ┌─────────────────┐
-                        │    Browser /    │
-                        │  React Frontend │  :5173
-                        └────────┬────────┘
-                                 │ HTTP REST (JSON)
-                                 ▼
-                        ┌─────────────────┐
-                        │   API Gateway   │  :8000
-                        │  (Django DRF)   │
-                        └──┬──┬──┬──┬──┬─┘
-              ┌────────────┘  │  │  │  └──────────────┐
-              ▼               ▼  │  ▼                 ▼
-       ┌──────────┐  ┌──────────┐│┌──────────┐ ┌──────────┐
-       │ Accounts │  │Catalogue ││ │  Cart    │ │ Wishlist │
-       │  :8001   │  │  :8002   ││ │  :8003   │ │  :8004   │
-       └──────────┘  └──────────┘│└──────────┘ └──────────┘
-                                 │
-              ┌──────────────────┼──────────────┐
-              ▼                  ▼               ▼
-       ┌──────────┐      ┌──────────┐    ┌──────────┐
-       │  Orders  │      │ Payments │    │ Reviews  │
-       │  :8005   │      │  :8006   │    │  :8007   │
-       └──────────┘      └──────────┘    └──────────┘
+```mermaid
+graph TD
+    Client[React TypeScript SPA Frontend - Port 5173] -->|HTTP / REST JSON| Gateway[API Gateway Reverse Proxy - Port 8000]
+
+    Gateway -->|/api/v1/auth & /profile| Accounts[Accounts Service - Port 8001]
+    Gateway -->|/api/v1/products & /categories| Catalogue[Catalogue Service - Port 8002]
+    Gateway -->|/api/v1/cart| Cart[Cart Service - Port 8003]
+    Gateway -->|/api/v1/wishlist| Wishlist[Wishlist Service - Port 8004]
+    Gateway -->|/api/v1/checkout & /orders| Orders[Orders Service - Port 8005]
+    Gateway -->|/api/v1/payments| Payments[Payments Service - Port 8006]
+    Gateway -->|/api/v1/reviews| Reviews[Reviews Service - Port 8007]
+
+    Accounts --> AccountsDB[(accounts_db)]
+    Catalogue --> CatalogueDB[(catalogue_db)]
+    Cart --> CartDB[(cart_db)]
+    Wishlist --> WishlistDB[(wishlist_db)]
+    Orders --> OrdersDB[(orders_db)]
+    Payments --> PaymentsDB[(payments_db)]
+    Reviews --> ReviewsDB[(reviews_db)]
 ```
 
-**Rule**: The frontend talks **only** to the Gateway. Internal services are not publicly exposed.
+---
+
+## 2. Microservice Boundaries & Responsibilities
+
+### 1. API Gateway (`gateway/`)
+- Single public entry point for all frontend client communication.
+- Manages CORS headers, proxy headers (`X-Forwarded-For`, `Authorization`), and correlation IDs.
+- Enforces rate limiting throttling (`AnonRateThrottle`: 200/min, `UserRateThrottle`: 1000/min).
+
+### 2. Identity & Accounts Service (`services/accounts`)
+- Manages User registration, Token Authentication, and password security (PBKDF2 SHA256).
+- Manages User Profile data and Shipping Addresses.
+- Enforces user ownership isolation for profile & address operations.
+
+### 3. Product Catalogue Service (`services/catalogue`)
+- Manages product master data, pricing, stock levels, categories, and inventory updates.
+- Supports search, price filtering, category filtering, and admin inventory updates.
+
+### 4. Shopping Cart Service (`services/cart`)
+- Manages user-bound persistent shopping cart items and quantities.
+- Communicates with Catalogue service to validate live stock availability.
+
+### 5. Wishlist Service (`services/wishlist`)
+- Manages user product wishlists with duplicate item prevention.
+
+### 6. Orders & Checkout Service (`services/orders`)
+- Orchestrates checkout operations: snapshotting price, SKU, product name, and shipping address.
+- Decrements inventory in Catalogue service and clears active shopping cart upon successful checkout.
+
+### 7. Payment Sandbox Service (`services/payments`)
+- Simulates payment transaction processing (`INITIATED`, `SUCCESS`, `FAILED`, `CANCELLED`).
+- Enforces idempotency via transaction reference keys.
+
+### 8. Reviews & Ratings Service (`services/reviews`)
+- Manages customer product reviews (1 to 5 stars rating validation).
+- Computes aggregate rating scores and rating breakdown distributions.
 
 ---
 
-## 2. Service Responsibility Matrix
-
-| Service   | Owns | Public via Gateway | Internal Calls Made To |
-|-----------|------|--------------------|------------------------|
-| **Accounts** | Users, profiles, addresses, auth tokens | `/api/v1/auth/`, `/api/v1/profile/` | None |
-| **Catalogue** | Categories, products, stock levels, images | `/api/v1/catalogue/` | None |
-| **Cart** | Active carts, cart items | `/api/v1/cart/` | Catalogue (price/stock validation) |
-| **Wishlist** | Saved product lists per user | `/api/v1/wishlist/` | Catalogue (product details) |
-| **Orders** | Order records, order items (snapshots), status lifecycle | `/api/v1/orders/` | Catalogue, Cart, Payments |
-| **Payments** | Sandbox payment sessions, provider references, payment status | `/api/v1/payments/` | Orders (status update) |
-| **Reviews** | Ratings, review text, moderation status | `/api/v1/reviews/` | Accounts (eligibility), Orders (purchase check) |
-| **Gateway** | Routing, CORS, request correlation | All `/api/v1/*` | All services (proxy) |
-
----
-
-## 3. Data Ownership
-
-**Rule**: Each service owns its database exclusively. No service may directly read or write another service's database. Cross-service data is exchanged via REST API calls only.
-
-| Service   | Database            | Key Tables (to be defined in Tasks 4–16) |
-|-----------|---------------------|------------------------------------------|
-| Accounts  | `shop_accounts_db`  | `users`, `profiles`, `addresses` |
-| Catalogue | `shop_catalogue_db` | `categories`, `products`, `product_images` |
-| Cart      | `shop_cart_db`      | `carts`, `cart_items` |
-| Wishlist  | `shop_wishlist_db`  | `wishlists`, `wishlist_items` |
-| Orders    | `shop_orders_db`    | `orders`, `order_items` (price/SKU snapshots) |
-| Payments  | `shop_payments_db`  | `payment_sessions`, `payment_events` |
-| Reviews   | `shop_reviews_db`   | `reviews`, `ratings` |
-
----
-
-## 4. Local Development Topology
-
-| Component   | Port  | Command |
-|-------------|-------|---------|
-| Gateway     | 8000  | `cd gateway && python manage.py runserver 8000` |
-| Accounts    | 8001  | `cd services/accounts && python manage.py runserver 8001` |
-| Catalogue   | 8002  | `cd services/catalogue && python manage.py runserver 8002` |
-| Cart        | 8003  | `cd services/cart && python manage.py runserver 8003` |
-| Wishlist    | 8004  | `cd services/wishlist && python manage.py runserver 8004` |
-| Orders      | 8005  | `cd services/orders && python manage.py runserver 8005` |
-| Payments    | 8006  | `cd services/payments && python manage.py runserver 8006` |
-| Reviews     | 8007  | `cd services/reviews && python manage.py runserver 8007` |
-| Frontend    | 5173  | `cd frontend && npm run dev` |
-| PostgreSQL  | 5432  | System service (auto-start) |
-
----
-
-## 5. Microservice Rules
-
-1. **Database isolation**: Never share ORM models or directly query another service's DB.
-2. **No distributed transactions**: Use clear order/payment states, idempotent operations, retries with limits, and compensating actions.
-3. **Timeouts**: Define timeouts and safe error handling for every remote call.
-4. **Correlation IDs**: Add request IDs to logs for tracing.
-5. **Authorization**: Keep authentication identity verifiable across services; enforce authorization *inside* each service.
-6. **Contract tests**: Use contract tests to detect breaking API changes between services.
-
----
-
-## 6. Failure & Idempotency Rules
-
-- Cart and Order operations must be idempotent (safe to retry).
-- Checkout must re-validate price and stock from the Catalogue service at the moment of order creation.
-- Payment callbacks must be idempotent — duplicate callbacks must not double-charge or create duplicate order records.
-- If a service is unreachable, the gateway returns a structured error (503) — never a raw exception.
+## 3. Communication Patterns & Resilience
+- **Synchronous REST/HTTP Proxying:** Gateway routes requests directly to internal microservice ports.
+- **Fail-Safe Service Isolation:** If an internal microservice fails, the API Gateway returns a clean JSON error response (`502 Bad Gateway` / `503 Service Unavailable`) without exposing internal tracebacks.
+- **Price & Item Snapshotting:** Orders store immutable copies of product names, SKUs, and prices to prevent historic order corruption when catalogue prices change.
