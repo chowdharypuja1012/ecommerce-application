@@ -55,7 +55,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <p className="product-desc">{product.description || 'No detailed description available.'}</p>
 
         <div className="card-footer">
-          <div className="product-price">${parseFloat(product.price).toFixed(2)}</div>
+          <div className="product-price">₹{parseFloat(product.price).toLocaleString('en-IN')}</div>
           <div style={{ display: 'flex', gap: '0.4rem' }}>
             <button
               className="btn-secondary"

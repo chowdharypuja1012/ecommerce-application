@@ -71,7 +71,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   <div className="cart-item-info">
                     <div className="cart-item-title">{item.product_name}</div>
                     <div className="cart-item-sku">SKU: {item.product_sku}</div>
-                    <div className="cart-item-price">${parseFloat(item.unit_price).toFixed(2)} each</div>
+                    <div className="cart-item-price">₹{parseFloat(item.unit_price).toLocaleString('en-IN')} each</div>
                   </div>
 
                   <div className="cart-item-actions">
@@ -94,7 +94,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     </div>
 
                     <div className="cart-item-line-total">
-                      ${parseFloat(item.line_total).toFixed(2)}
+                      ₹{parseFloat(item.line_total).toLocaleString('en-IN')}
                     </div>
 
                     <button
@@ -118,7 +118,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
           <div className="cart-drawer-footer">
             <div className="subtotal-row">
               <span>Server-Calculated Subtotal</span>
-              <span className="subtotal-amount">${subtotal}</span>
+              <span className="subtotal-amount">₹{parseFloat(subtotal).toLocaleString('en-IN')}</span>
             </div>
             <p className="subtotal-note">Taxes and shipping calculated at checkout.</p>
 

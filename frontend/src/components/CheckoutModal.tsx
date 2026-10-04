@@ -132,7 +132,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
             <div className="subtotal-row" style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
               <span>Total Amount Pending:</span>
-              <span className="subtotal-amount">${parseFloat(placedOrder.total_amount).toFixed(2)}</span>
+              <span className="subtotal-amount">₹{parseFloat(placedOrder.total_amount).toLocaleString('en-IN')}</span>
             </div>
 
             <div style={{ marginTop: '1.5rem', display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
@@ -279,14 +279,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 {cartItems.map((item) => (
                   <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem', padding: '0.3rem 0', color: 'var(--color-text-muted, #94a3b8)' }}>
                     <span>{item.product_name} &times; {item.quantity}</span>
-                    <span>${parseFloat(item.line_total).toFixed(2)}</span>
+                    <span>₹{parseFloat(item.line_total).toLocaleString('en-IN')}</span>
                   </div>
                 ))}
               </div>
 
               <div className="subtotal-row" style={{ marginTop: '0.75rem' }}>
                 <span>Subtotal (Server Calculated):</span>
-                <span className="subtotal-amount">${subtotal}</span>
+                <span className="subtotal-amount">₹{parseFloat(subtotal).toLocaleString('en-IN')}</span>
               </div>
             </div>
 

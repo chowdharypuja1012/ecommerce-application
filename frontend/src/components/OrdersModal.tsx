@@ -133,7 +133,7 @@ export const OrdersModal: React.FC<OrdersModalProps> = ({ isOpen, onClose, onOpe
                         </span>
 
                         <span style={{ fontWeight: 700, fontSize: '1.1rem', color: '#fff' }}>
-                          ${parseFloat(order.total_amount).toFixed(2)}
+                          ₹{parseFloat(order.total_amount).toLocaleString('en-IN')}
                         </span>
                       </div>
                     </div>
@@ -194,7 +194,7 @@ export const OrdersModal: React.FC<OrdersModalProps> = ({ isOpen, onClose, onOpe
                               <span>
                                 <strong style={{ color: '#fff' }}>{item.product_name}</strong> ({item.product_sku}) &times; {item.quantity}
                               </span>
-                              <span>${parseFloat(item.line_total).toFixed(2)} (${parseFloat(item.unit_price).toFixed(2)} ea)</span>
+                              <span>₹{parseFloat(item.line_total).toLocaleString('en-IN')} (₹{parseFloat(item.unit_price).toLocaleString('en-IN')} ea)</span>
                             </div>
                           ))}
                         </div>

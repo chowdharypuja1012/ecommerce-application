@@ -134,7 +134,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             <div className="detail-sku-badge">SKU: <code>{product.sku}</code></div>
 
             <div className="detail-price-row">
-              <span className="detail-price">${parseFloat(product.price).toFixed(2)}</span>
+              <span className="detail-price">₹{parseFloat(product.price).toLocaleString('en-IN')}</span>
               <span className={`stock-badge ${isOutOfStock ? 'stock-out' : 'stock-in'}`}>
                 {isOutOfStock ? 'Out of Stock' : `${product.stock} Units Available`}
               </span>
@@ -199,7 +199,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                 onClick={handleAdd}
                 type="button"
               >
-                {isOutOfStock ? 'Currently Unavailable' : `Add ${quantity} to Cart — $${(parseFloat(product.price) * quantity).toFixed(2)}`}
+                {isOutOfStock ? 'Currently Unavailable' : `Add ${quantity} to Cart — ₹${(parseFloat(product.price) * quantity).toLocaleString('en-IN')}`}
               </button>
             </div>
           </div>

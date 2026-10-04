@@ -43,8 +43,6 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     }
   };
 
-  const formattedAmount = parseFloat(order.total_amount || '0').toFixed(2);
-
   return (
     <div className="modal-overlay" id="payment-modal-overlay" onClick={onClose}>
       <div className="modal-content animate-fade-in" style={{ maxWidth: '580px' }} onClick={(e) => e.stopPropagation()}>
@@ -81,7 +79,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.1rem', fontWeight: 700 }}>
               <span>Total Payable Amount:</span>
-              <span style={{ color: 'var(--color-primary-light, #818cf8)' }}>${formattedAmount} USD</span>
+              <span style={{ color: 'var(--color-primary-light, #818cf8)' }}>₹{parseFloat(order.total_amount).toLocaleString('en-IN')} INR</span>
             </div>
           </div>
 

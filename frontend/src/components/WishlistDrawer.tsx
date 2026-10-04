@@ -73,7 +73,7 @@ export const WishlistDrawer: React.FC<WishlistDrawerProps> = ({
                     <div className="cart-item-info">
                       <div className="cart-item-title">{prod.name}</div>
                       <div className="cart-item-sku">SKU: {prod.sku}</div>
-                      <div className="cart-item-price">${price}</div>
+                      <div className="cart-item-price">₹{parseFloat(price).toLocaleString('en-IN')}</div>
                       {isOutOfStock ? (
                         <span style={{ color: 'var(--color-danger, #ef4444)', fontSize: '0.8rem' }}>
                           Out of stock

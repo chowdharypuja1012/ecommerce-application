@@ -49,7 +49,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           className="price-input"
           type="number"
           min="0"
-          placeholder="Min $"
+          placeholder="Min ₹"
           value={minPrice}
           onChange={(e) => onMinPriceChange(e.target.value)}
         />
@@ -59,7 +59,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           className="price-input"
           type="number"
           min="0"
-          placeholder="Max $"
+          placeholder="Max ₹"
           value={maxPrice}
           onChange={(e) => onMaxPriceChange(e.target.value)}
         />
