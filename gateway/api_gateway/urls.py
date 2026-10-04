@@ -21,6 +21,8 @@ urlpatterns = [
 
     # ── Catalogue service  (products, categories)
     re_path(r"^api/v1/catalogue/(?P<rest>.*)$", proxy_view("CATALOGUE_SERVICE_URL"), name="proxy-catalogue"),
+    re_path(r"^api/v1/products/(?P<rest>.*)$",  proxy_view("CATALOGUE_SERVICE_URL"), name="proxy-products"),
+    re_path(r"^api/v1/categories/(?P<rest>.*)$", proxy_view("CATALOGUE_SERVICE_URL"), name="proxy-categories"),
 
     # ── Cart service
     re_path(r"^api/v1/cart/(?P<rest>.*)$",      proxy_view("CART_SERVICE_URL"),      name="proxy-cart"),
