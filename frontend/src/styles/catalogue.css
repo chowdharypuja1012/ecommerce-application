@@ -46,14 +46,15 @@
 
 .brand-logo {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 1.8rem;
+  font-size: 1.7rem;
   font-weight: 700;
   color: var(--ruja-dark);
   text-decoration: none;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
   display: flex;
   align-items: center;
   gap: 0.35rem;
+  white-space: nowrap;
 }
 
 .logo-heart {

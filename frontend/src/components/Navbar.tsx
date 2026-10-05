@@ -34,7 +34,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       <header className="navbar" role="banner">
         <div className="container navbar-inner">
           <a href="/" className="brand-logo" id="brand-logo-link">
-            ruja <span className="logo-heart">♡</span>
+            Sweet Sentiments <span className="logo-heart">♡</span>
           </a>
 
           <nav className="nav-center-links" aria-label="Main Navigation">

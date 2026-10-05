@@ -261,4 +261,4 @@ class Command(BaseCommand):
             else:
                 self.stdout.write(f"  Updated product: {product.name} (price: INR {product.price})")
 
-        self.stdout.write(self.style.SUCCESS("Successfully seeded ruja lifestyle products!"))
+        self.stdout.write(self.style.SUCCESS("Successfully seeded Sweet Sentiments lifestyle products!"))

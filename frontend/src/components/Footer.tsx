@@ -17,7 +17,7 @@ export const Footer: React.FC = () => {
       <div className="footer-main">
         <div className="container">
           <div className="footer-logo">
-            ruja <span className="logo-heart" style={{ color: 'var(--ruja-pink)', fontSize: '1rem' }}>♡</span>
+            Sweet Sentiments <span className="logo-heart" style={{ color: 'var(--ruja-pink)', fontSize: '1rem' }}>♡</span>
           </div>
           <div className="footer-links">
             <a href="#shop" className="footer-link">Shop</a>
@@ -28,7 +28,7 @@ export const Footer: React.FC = () => {
             <a href="#returns" className="footer-link">Returns</a>
           </div>
           <p className="footer-copy">
-            &copy; 2026 ruja. Cute Lifestyle & Gifting Store. Made with ♡
+            &copy; 2026 Sweet Sentiments. Cute Lifestyle & Gifting Store. Made with ♡
           </p>
         </div>
       </div>
