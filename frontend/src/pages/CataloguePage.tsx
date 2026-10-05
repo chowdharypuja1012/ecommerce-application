@@ -308,6 +308,31 @@ export const CataloguePage: React.FC = () => {
   };
 
   // Wishlist Handlers
+  const wishlistProductIds = React.useMemo(
+    () => new Set(wishlist?.items.map((item) => item.product_id) || []),
+    [wishlist]
+  );
+
+  const handleToggleWishlist = async (product: Product) => {
+    if (!currentUser) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    const existingItem = wishlist?.items.find((item) => item.product_id === product.id);
+    try {
+      if (existingItem) {
+        const updatedWishlist = await wishlistClient.removeItem(existingItem.id);
+        setWishlist(updatedWishlist);
+      } else {
+        const updatedWishlist = await wishlistClient.addItem(product.id);
+        setWishlist(updatedWishlist);
+      }
+    } catch (err: any) {
+      alert(err.message || 'Could not update wishlist.');
+    }
+  };
+
   const handleRemoveWishlistItem = async (itemId: number) => {
     try {
       const updatedWishlist = await wishlistClient.removeItem(itemId);
@@ -465,7 +490,9 @@ export const CataloguePage: React.FC = () => {
           <>
             <ProductGrid
               products={products}
+              wishlistProductIds={wishlistProductIds}
               onAddToCart={(prod) => handleAddToCart(prod, 1)}
+              onToggleWishlist={handleToggleWishlist}
               onSelectProduct={handleSelectProduct}
             />
             <PaginationControls
@@ -545,8 +572,10 @@ export const CataloguePage: React.FC = () => {
       <ProductDetailModal
         product={selectedProduct}
         isOpen={isDetailModalOpen}
+        isWishlisted={selectedProduct ? wishlistProductIds.has(selectedProduct.id) : false}
         onClose={handleCloseDetailModal}
         onAddToCart={handleAddToCart}
+        onToggleWishlist={handleToggleWishlist}
       />
 
       {/* Auth Modal */}

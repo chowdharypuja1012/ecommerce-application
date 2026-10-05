@@ -7,15 +7,19 @@ import { authClient } from '../api/authClient';
 interface ProductDetailModalProps {
   product: Product | null;
   isOpen: boolean;
+  isWishlisted?: boolean;
   onClose: () => void;
   onAddToCart: (product: Product, quantity: number) => void;
+  onToggleWishlist?: (product: Product) => void;
 }
 
 export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   product,
   isOpen,
+  isWishlisted = false,
   onClose,
   onAddToCart,
+  onToggleWishlist,
 }) => {
   const [quantity, setQuantity] = useState(1);
   const [addedNotice, setAddedNotice] = useState(false);
@@ -67,6 +71,12 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
     onAddToCart(product, quantity);
     setAddedNotice(true);
     setTimeout(() => setAddedNotice(false), 2000);
+  };
+
+  const handleToggleWishlistClick = () => {
+    if (onToggleWishlist && product) {
+      onToggleWishlist(product);
+    }
   };
 
   const handleReviewSubmit = async (e: React.FormEvent) => {
@@ -125,6 +135,28 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                   (e.target as HTMLImageElement).src = defaultImage;
                 }}
               />
+              <button
+                className={`card-wishlist-btn ${isWishlisted ? 'active' : ''}`}
+                id={`detail-image-wishlist-toggle-${product.id}`}
+                type="button"
+                onClick={handleToggleWishlistClick}
+                aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+                title={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+              >
+                <svg
+                  className="heart-icon"
+                  viewBox="0 0 24 24"
+                  width="20"
+                  height="20"
+                  fill={isWishlisted ? '#E85B86' : 'none'}
+                  stroke={isWishlisted ? '#E85B86' : '#554444'}
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                </svg>
+              </button>
               {product.category && (
                 <span className="card-category-tag">{product.category.name}</span>
               )}
@@ -194,12 +226,38 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                   disabled={isOutOfStock}
                   onClick={handleAdd}
                   type="button"
+                  style={{ flex: 1 }}
                 >
                   {isOutOfStock ? 'Currently Unavailable' : `Add to Bag — ₹${(parseFloat(product.price) * quantity).toLocaleString('en-IN')}`}
+                </button>
+
+                <button
+                  id="detail-wishlist-toggle-btn"
+                  className={`btn-detail-wishlist ${isWishlisted ? 'active' : ''}`}
+                  onClick={handleToggleWishlistClick}
+                  type="button"
+                  title={isWishlisted ? 'Remove from wishlist' : 'Save to wishlist'}
+                  aria-label={isWishlisted ? 'Remove from wishlist' : 'Save to wishlist'}
+                >
+                  <svg
+                    className="heart-icon"
+                    viewBox="0 0 24 24"
+                    width="18"
+                    height="18"
+                    fill={isWishlisted ? '#E85B86' : 'none'}
+                    stroke={isWishlisted ? '#E85B86' : 'currentColor'}
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                  </svg>
+                  <span>{isWishlisted ? 'Wishlisted' : 'Wishlist'}</span>
                 </button>
               </div>
             </div>
           </div>
+
 
           {/* ── Customer Reviews Section ── */}
           <div className="reviews-modal-section">

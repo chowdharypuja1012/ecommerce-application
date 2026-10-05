@@ -4,13 +4,17 @@ import { ProductCard } from './ProductCard';
 
 interface ProductGridProps {
   products: Product[];
+  wishlistProductIds?: Set<number>;
   onAddToCart?: (product: Product) => void;
+  onToggleWishlist?: (product: Product) => void;
   onSelectProduct?: (product: Product) => void;
 }
 
 export const ProductGrid: React.FC<ProductGridProps> = ({
   products,
+  wishlistProductIds,
   onAddToCart,
+  onToggleWishlist,
   onSelectProduct,
 }) => {
   return (
@@ -19,10 +23,13 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
         <ProductCard
           key={product.id}
           product={product}
+          isWishlisted={wishlistProductIds ? wishlistProductIds.has(product.id) : false}
           onAddToCart={onAddToCart}
+          onToggleWishlist={onToggleWishlist}
           onSelectProduct={onSelectProduct}
         />
       ))}
     </div>
   );
 };
+
