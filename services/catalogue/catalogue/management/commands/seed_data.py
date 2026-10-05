@@ -166,6 +166,16 @@ class Command(BaseCommand):
                 "image_url": "/images/products/a-box-of-joy-birthday-hamper.jpg",
             },
             {
+                "name": "Love in a Little Box - Gift Hamper",
+                "slug": "love-in-a-little-box-gift-hamper",
+                "sku": "GFT-LB-021",
+                "category": cat_gifts,
+                "price": "1899.00",
+                "stock": 25,
+                "description": "An enchanting curated love hamper with delicate ribbon detailing, artisan scented candle, rose bath salt jar, and sweet sentiment keepsake note.",
+                "image_url": "/images/products/love-in-a-little-box-gift-hamper.jpg",
+            },
+            {
                 "name": "Thank You - Appreciation Box",
                 "slug": "thank-you-appreciation-box",
                 "sku": "GFT-TY-013",
