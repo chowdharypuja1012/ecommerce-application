@@ -41,7 +41,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 72px;
+  gap: 1.25rem;
+  height: 74px;
+  width: 100%;
+  max-width: 1360px;
+  margin: 0 auto;
 }
 
 /* ── Brand Logo with Dangling Seal & Artistic Calligraphy ── */
@@ -50,13 +54,14 @@
   display: inline-flex;
   align-items: center;
   user-select: none;
+  flex-shrink: 0;
   transition: transform 0.2s ease;
 }
 
 .sweet-brand-logo-wrap {
   display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.65rem;
 }
 
 .logo-charm-anchor {
@@ -65,6 +70,7 @@
   align-items: center;
   justify-content: center;
   padding-top: 4px;
+  flex-shrink: 0;
 }
 
 .logo-hanging-charm {
@@ -159,27 +165,30 @@
   flex-direction: column;
   justify-content: center;
   text-align: left;
+  white-space: nowrap;
 }
 
 .calligraphy-title-row {
   display: inline-flex;
   align-items: baseline;
-  gap: 0.3rem;
+  gap: 0.25rem;
+  white-space: nowrap;
 }
 
 .calligraphy-word {
   font-family: 'Great Vibes', 'Parisienne', 'Alex Brush', cursive;
-  font-size: 2.15rem;
+  font-size: 1.7rem;
   font-weight: 400;
   color: var(--ruja-dark);
   line-height: 0.95;
   letter-spacing: 0.5px;
   text-shadow: 0 1px 1px rgba(232, 160, 191, 0.15);
+  white-space: nowrap;
 }
 
 .calligraphy-flourish-heart {
   color: #E85B86;
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   display: inline-block;
   transform: translateY(-2px);
   animation: heartPulseSlow 3s ease-in-out infinite;
@@ -192,68 +201,64 @@
 
 .calligraphy-tagline {
   font-family: 'DM Sans', sans-serif;
-  font-size: 0.58rem;
+  font-size: 0.52rem;
   font-weight: 800;
-  letter-spacing: 2.4px;
+  letter-spacing: 2px;
   color: #9E7A85;
   text-transform: uppercase;
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.25rem;
   margin-top: 1px;
+  white-space: nowrap;
 }
 
 .tagline-star {
   color: #F59E0B;
-  font-size: 0.55rem;
+  font-size: 0.5rem;
   opacity: 0.85;
 }
 
 /* Size Adjustments */
 .sweet-brand-logo-wrap.size-sm .calligraphy-word {
-  font-size: 1.65rem;
+  font-size: 1.45rem;
 }
 
 .sweet-brand-logo-wrap.size-lg .calligraphy-word {
-  font-size: 2.7rem;
+  font-size: 2.3rem;
 }
 
 .sweet-brand-logo-wrap.size-lg .calligraphy-tagline {
-  font-size: 0.72rem;
-  letter-spacing: 3.2px;
+  font-size: 0.65rem;
+  letter-spacing: 2.6px;
 }
 
+/* ── Center Nav Links in Single Row ── */
 .nav-center-links {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 1.4rem;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .nav-link {
   font-size: 0.88rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-secondary);
-  transition: color 0.2s ease;
+  transition: all 0.2s ease;
   position: relative;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: var(--radius-pill);
 }
 
 .nav-link:hover {
-  color: var(--ruja-pink);
-}
-
-.nav-link::after {
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  left: 0;
-  width: 0;
-  height: 1.5px;
-  background: var(--ruja-pink);
-  transition: width 0.3s ease;
-}
-
-.nav-link:hover::after {
-  width: 100%;
+  color: #E85B86;
+  background: rgba(232, 160, 191, 0.12);
 }
 
 .arrow-down {
@@ -261,14 +266,17 @@
   margin-left: 0.15rem;
 }
 
+/* ── Right Action Buttons ── */
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.65rem;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .user-menu-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.4rem;
   padding: 0.45rem 0.8rem;
@@ -276,14 +284,15 @@
   border: none;
   color: var(--text-secondary);
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: color 0.2s ease;
+  transition: all 0.2s ease;
   border-radius: var(--radius-pill);
+  white-space: nowrap;
 }
 
 .user-menu-btn:hover {
-  color: var(--ruja-pink);
+  color: #E85B86;
   background: var(--ruja-pink-pale);
 }
 
@@ -294,22 +303,24 @@
   background: var(--ruja-pink);
   color: #fff;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .btn-signout {
-  padding: 0.4rem 0.75rem;
+  padding: 0.45rem 0.8rem;
   border-radius: var(--radius-pill);
   background: #FEE2E2;
   color: #CD7B7B;
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 700;
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .btn-signout:hover {
@@ -321,57 +332,63 @@
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: transparent;
+  background: #FFF0F5;
+  border: 1px solid rgba(232, 160, 191, 0.35);
   color: var(--text-primary);
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .cart-icon-btn:hover {
-  background: var(--ruja-pink-pale);
-  color: var(--ruja-pink);
+  background: #FFE4EC;
+  color: #E85B86;
   transform: scale(1.08);
+  border-color: #E85B86;
 }
 
 .cart-count-badge {
   position: absolute;
   top: -2px;
   right: -2px;
-  background: var(--ruja-pink);
+  background: #E85B86;
   color: #fff;
   font-size: 0.65rem;
   font-weight: 700;
-  min-width: 17px;
-  height: 17px;
+  min-width: 18px;
+  height: 18px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 3px;
+  box-shadow: 0 2px 6px rgba(232, 91, 134, 0.4);
 }
 
 .btn-shop-now {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.55rem 1.2rem;
+  padding: 0.55rem 1.15rem;
   border-radius: var(--radius-pill);
-  background: var(--ruja-pink);
+  background: linear-gradient(135deg, #F092B6 0%, #E85B86 100%);
   color: #FFFFFF;
   font-size: 0.88rem;
-  font-weight: 600;
+  font-weight: 700;
   transition: all 0.2s ease;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(232, 160, 191, 0.3);
+  box-shadow: 0 4px 14px rgba(232, 91, 134, 0.3);
+  white-space: nowrap;
+  border: none;
 }
 
 .btn-shop-now:hover {
-  background: var(--accent-primary-hover);
+  background: linear-gradient(135deg, #E85B86 0%, #D84B76 100%);
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(232, 160, 191, 0.4);
+  box-shadow: 0 6px 18px rgba(232, 91, 134, 0.45);
 }
 
 .btn-arrow {
@@ -384,27 +401,29 @@
   transform: translateX(3px);
 }
 
-
-/* ── ruja Hero Banner Section ── */
+/* ── Cute Boutique Hero Banner Section ── */
 .hero-banner {
-  padding: 0;
+  padding: 0.5rem 0 1.5rem;
 }
 
 .hero-card-banner {
-  background: var(--bg-hero);
+  background: linear-gradient(135deg, #FFF7F9 0%, #FFF0F5 45%, #FDF4ED 100%);
   padding: 3rem 3.5rem;
+  border-radius: 28px;
+  border: 1.5px solid rgba(232, 160, 191, 0.35);
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: center;
-  gap: 2rem;
+  gap: 2.5rem;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 14px 40px rgba(232, 160, 191, 0.14);
 }
 
 .hero-left-content {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.15rem;
   max-width: 480px;
   z-index: 2;
 }
@@ -412,15 +431,23 @@
 .hero-eyebrow {
   font-family: 'DM Sans', sans-serif;
   font-size: 0.72rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: var(--ruja-pink);
+  color: #E85B86;
+  background: #FFE4EC;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-pill);
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  box-shadow: 0 2px 6px rgba(232, 91, 134, 0.12);
 }
 
 .hero-title {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 3rem;
+  font-size: 3.1rem;
   font-weight: 600;
   line-height: 1.15;
   color: var(--ruja-dark);
@@ -428,15 +455,15 @@
 }
 
 .hero-title em {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
   font-style: italic;
-  font-weight: 500;
-  color: var(--ruja-pink);
+  font-weight: 600;
+  color: #E85B86;
 }
 
 .hero-subtitle {
-  font-size: 0.95rem;
-  line-height: 1.6;
+  font-size: 0.96rem;
+  line-height: 1.65;
   color: var(--text-secondary);
   font-weight: 400;
 }
@@ -446,35 +473,37 @@
   align-items: center;
   gap: 0.5rem;
   width: fit-content;
-  padding: 0.8rem 1.6rem;
+  padding: 0.85rem 1.8rem;
   border-radius: var(--radius-pill);
-  background: var(--ruja-pink);
+  background: linear-gradient(135deg, #F092B6 0%, #E85B86 100%);
   color: #FFFFFF;
-  font-size: 0.92rem;
-  font-weight: 600;
-  box-shadow: 0 4px 16px rgba(232, 160, 191, 0.35);
+  font-size: 0.95rem;
+  font-weight: 700;
+  box-shadow: 0 6px 20px rgba(232, 91, 134, 0.35);
   transition: all 0.25s ease;
-  margin-top: 0.75rem;
+  margin-top: 0.5rem;
+  text-decoration: none;
 }
 
 .btn-hero-cta:hover {
-  background: var(--accent-primary-hover);
+  background: linear-gradient(135deg, #E85B86 0%, #D84B76 100%);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(232, 160, 191, 0.45);
+  box-shadow: 0 8px 26px rgba(232, 91, 134, 0.45);
 }
 
 .hero-image-collage {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
-  gap: 0.75rem;
+  gap: 0.85rem;
   height: 380px;
 }
 
 .hero-img-item {
-  border-radius: 16px;
+  border-radius: 18px;
   overflow: hidden;
   position: relative;
+  box-shadow: 0 4px 14px rgba(61, 47, 47, 0.08);
 }
 
 .hero-img-item img {
@@ -490,20 +519,21 @@
 
 .hero-img-item:first-child {
   grid-row: 1 / 3;
-  border-radius: 16px;
+  border-radius: 20px;
 }
 
 .hero-decorative-badge {
   position: absolute;
   top: 1rem;
   left: 1rem;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(8px);
-  padding: 0.35rem 0.75rem;
+  -webkit-backdrop-filter: blur(8px);
+  padding: 0.35rem 0.85rem;
   border-radius: var(--radius-pill);
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--ruja-pink);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #E85B86;
 }
 
 

@@ -9,7 +9,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
   size = 'md',
   showTagline = true,
 }) => {
-  const sealDimensions = size === 'sm' ? 44 : size === 'lg' ? 68 : 52;
+  const sealDimensions = size === 'sm' ? 34 : size === 'lg' ? 62 : 42;
 
   return (
     <div className={`sweet-brand-logo-wrap size-${size}`}>

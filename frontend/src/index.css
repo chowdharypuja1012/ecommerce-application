@@ -107,7 +107,7 @@ input, select, button {
 /* Base Layout Container */
 .container {
   width: 100%;
-  max-width: 1240px;
+  max-width: 1360px;
   margin: 0 auto;
   padding: 0 1.5rem;
 }
