@@ -136,3 +136,70 @@ input, select, button {
 .animate-fade-in {
   animation: fadeIn 0.5s ease-out forwards;
 }
+
+/* ── Global Button Utilities ── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.82rem 1.6rem;
+  border-radius: var(--radius-pill);
+  background: var(--ruja-pink);
+  color: #FFFFFF !important;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(232, 160, 191, 0.4);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-primary-hover);
+  box-shadow: 0 6px 22px rgba(232, 160, 191, 0.55);
+  transform: translateY(-2px);
+  color: #FFFFFF !important;
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.75rem 1.35rem;
+  border-radius: var(--radius-pill);
+  background: var(--ruja-pink-pale);
+  color: var(--ruja-pink);
+  border: 1px solid rgba(232, 160, 191, 0.45);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #FFE4E8;
+  color: var(--accent-primary-hover);
+  border-color: var(--ruja-pink);
+}
+
+.btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
