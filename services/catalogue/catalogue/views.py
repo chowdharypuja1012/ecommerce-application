@@ -1,4 +1,5 @@
 from decimal import Decimal, InvalidOperation
+from django.db import transaction
 from django.db.models import Q
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
@@ -256,3 +257,119 @@ class AdminLowStockAlertsView(APIView):
             "total_low_stock": low_stock_products.count(),
             "products": serializer.data,
         }, status=status.HTTP_200_OK)
+
+
+# ── INVENTORY TRANSACTIONS (Order Placements & Cancellations) ────────────────
+
+class InventoryDeductView(APIView):
+    """
+    POST /api/v1/catalogue/inventory/deduct/
+    Atomic batch inventory deduction with row-level locks (select_for_update).
+    Expects payload: {"items": [{"product_id": int, "quantity": int}, ...]}
+    """
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        items = request.data.get("items", [])
+        if not items:
+            return Response(
+                {"error": "No items provided for stock deduction."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        updated_items = []
+        try:
+            with transaction.atomic():
+                for item in items:
+                    product_id = item.get("product_id")
+                    quantity = int(item.get("quantity", 0))
+
+                    if quantity <= 0:
+                        continue
+
+                    product = Product.objects.select_for_update().filter(id=product_id).first()
+                    if not product:
+                        return Response(
+                            {"error": f"Product #{product_id} does not exist."},
+                            status=status.HTTP_404_NOT_FOUND,
+                        )
+
+                    if product.stock < quantity:
+                        return Response(
+                            {
+                                "error": f"Insufficient stock for '{product.name}'. Requested {quantity}, but only {product.stock} available.",
+                                "product_id": product.id,
+                                "available_stock": product.stock,
+                            },
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
+
+                    product.stock -= quantity
+                    product.save(update_fields=["stock"])
+                    updated_items.append({
+                        "product_id": product.id,
+                        "product_name": product.name,
+                        "new_stock": product.stock,
+                    })
+
+            return Response({
+                "success": True,
+                "message": "Inventory stock deducted successfully.",
+                "updated_items": updated_items,
+            }, status=status.HTTP_200_OK)
+
+        except Exception as exc:
+            return Response(
+                {"error": f"Failed to deduct inventory stock: {str(exc)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+
+class InventoryRestoreView(APIView):
+    """
+    POST /api/v1/catalogue/inventory/restore/
+    Atomic batch inventory restoration for cancelled/refunded orders.
+    Expects payload: {"items": [{"product_id": int, "quantity": int}, ...]}
+    """
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        items = request.data.get("items", [])
+        if not items:
+            return Response(
+                {"error": "No items provided for stock restoration."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        updated_items = []
+        try:
+            with transaction.atomic():
+                for item in items:
+                    product_id = item.get("product_id")
+                    quantity = int(item.get("quantity", 0))
+
+                    if quantity <= 0:
+                        continue
+
+                    product = Product.objects.select_for_update().filter(id=product_id).first()
+                    if product:
+                        product.stock += quantity
+                        product.save(update_fields=["stock"])
+                        updated_items.append({
+                            "product_id": product.id,
+                            "product_name": product.name,
+                            "new_stock": product.stock,
+                        })
+
+            return Response({
+                "success": True,
+                "message": "Inventory stock restored successfully.",
+                "updated_items": updated_items,
+            }, status=status.HTTP_200_OK)
+
+        except Exception as exc:
+            return Response(
+                {"error": f"Failed to restore inventory stock: {str(exc)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+

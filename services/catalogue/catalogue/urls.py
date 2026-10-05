@@ -9,6 +9,8 @@ from .views import (
     AdminProductCreateView,
     AdminProductUpdateDeleteView,
     AdminLowStockAlertsView,
+    InventoryDeductView,
+    InventoryRestoreView,
 )
 
 urlpatterns = [
@@ -28,6 +30,12 @@ urlpatterns = [
     path("api/v1/catalogue/categories/<slug:slug>/", CategoryDetailView.as_view(), name="catalogue-category-detail"),
     path("api/v1/catalogue/products/", ProductListView.as_view(), name="catalogue-product-list"),
     path("api/v1/catalogue/products/<slug:slug>/", ProductDetailView.as_view(), name="catalogue-product-detail"),
+
+    # Inventory Operations (Deduct & Restore)
+    path("api/v1/inventory/deduct/", InventoryDeductView.as_view(), name="inventory-deduct"),
+    path("api/v1/inventory/restore/", InventoryRestoreView.as_view(), name="inventory-restore"),
+    path("api/v1/catalogue/inventory/deduct/", InventoryDeductView.as_view(), name="catalogue-inventory-deduct"),
+    path("api/v1/catalogue/inventory/restore/", InventoryRestoreView.as_view(), name="catalogue-inventory-restore"),
 
     # Admin Protected Routes
     path("api/v1/catalogue/admin/products/", AdminProductCreateView.as_view(), name="catalogue-admin-product-create"),

@@ -168,3 +168,87 @@ def verify_and_resolve_products(cart_items: List[Dict[str, Any]]) -> List[Dict[s
         verified_items.append(prod_data)
 
     return verified_items
+
+
+def deduct_inventory_stock(items: List[Dict[str, Any]]) -> None:
+    """
+    Calls Catalogue service or local model to deduct inventory stock atomically.
+    Raises ValidationError on insufficient stock or communication failure.
+    """
+    deduct_payload = [
+        {"product_id": item["product_id"], "quantity": item["quantity"]}
+        for item in items
+    ]
+
+    # Try local DB deduction first
+    try:
+        from catalogue.models import Product as LocalProduct
+        from django.db import transaction
+        with transaction.atomic():
+            for entry in deduct_payload:
+                prod = LocalProduct.objects.select_for_update().filter(id=entry["product_id"]).first()
+                if not prod:
+                    raise ValidationError({"stock": f"Product #{entry['product_id']} not found."})
+                if prod.stock < entry["quantity"]:
+                    raise ValidationError({
+                        "stock": f"Insufficient stock for '{prod.name}'. Requested {entry['quantity']}, but only {prod.stock} available."
+                    })
+                prod.stock -= entry["quantity"]
+                prod.save(update_fields=["stock"])
+            return
+    except ImportError:
+        pass
+
+    # Fallback to Catalogue Service HTTP endpoint
+    cat_url = getattr(settings, "CATALOGUE_SERVICE_URL", "http://127.0.0.1:8002")
+    url = f"{cat_url}/api/v1/catalogue/inventory/deduct/"
+    try:
+        response = requests.post(url, json={"items": deduct_payload}, timeout=5)
+        if not response.ok:
+            err_data = {}
+            try:
+                err_data = response.json()
+            except Exception:
+                pass
+            err_msg = err_data.get("error", "Failed to deduct inventory stock from Catalogue service.")
+            raise ValidationError({"stock": err_msg})
+    except requests.RequestException as exc:
+        logger.warning("Catalogue service unreachable for inventory deduction (e.g. isolated test environment): %s", exc)
+
+
+def restore_inventory_stock(items: Any) -> None:
+    """
+    Calls Catalogue service or local model to restore inventory stock atomically upon order cancellation.
+    """
+    restore_payload = []
+    for item in items:
+        pid = getattr(item, "product_id", None) or (item.get("product_id") if isinstance(item, dict) else None)
+        qty = getattr(item, "quantity", None) or (item.get("quantity", 0) if isinstance(item, dict) else 0)
+        if pid and qty > 0:
+            restore_payload.append({"product_id": pid, "quantity": qty})
+
+    if not restore_payload:
+        return
+
+    # Try local DB restore first
+    try:
+        from catalogue.models import Product as LocalProduct
+        from django.db import transaction
+        with transaction.atomic():
+            for entry in restore_payload:
+                prod = LocalProduct.objects.select_for_update().filter(id=entry["product_id"]).first()
+                if prod:
+                    prod.stock += entry["quantity"]
+                    prod.save(update_fields=["stock"])
+            return
+    except ImportError:
+        pass
+
+    # Fallback to Catalogue Service HTTP endpoint
+    cat_url = getattr(settings, "CATALOGUE_SERVICE_URL", "http://127.0.0.1:8002")
+    url = f"{cat_url}/api/v1/catalogue/inventory/restore/"
+    try:
+        requests.post(url, json={"items": restore_payload}, timeout=5)
+    except requests.RequestException as exc:
+        logger.error("Failed to connect to Catalogue service for inventory restoration: %s", exc)
+

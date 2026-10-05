@@ -9,7 +9,13 @@ from rest_framework.exceptions import ValidationError
 
 from .models import Order, OrderItem, OrderStatus
 from .serializers import OrderSerializer, CheckoutInputSerializer
-from .service_clients import fetch_user_cart, clear_user_cart, verify_and_resolve_products
+from .service_clients import (
+    fetch_user_cart,
+    clear_user_cart,
+    verify_and_resolve_products,
+    deduct_inventory_stock,
+    restore_inventory_stock,
+)
 
 
 class CheckoutPreviewView(APIView):
@@ -88,6 +94,9 @@ class CheckoutCreateOrderView(APIView):
 
         # 3. Create Order & OrderItem snapshots within atomic transaction
         with transaction.atomic():
+            # 3a. Atomically deduct inventory stock from Catalogue service
+            deduct_inventory_stock(verified_items)
+
             order = Order.objects.create(
                 user=request.user,
                 status=OrderStatus.PENDING,
@@ -171,6 +180,8 @@ class OrderCancelView(APIView):
 
         try:
             order.transition_to(OrderStatus.CANCELLED)
+            # Restore inventory stock back to Catalogue
+            restore_inventory_stock(order.items.all())
         except ValidationError as err:
             return Response(err.detail, status=status.HTTP_400_BAD_REQUEST)
 
@@ -204,8 +215,11 @@ class OrderStatusUpdateView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
+        prev_status = order.status
         try:
             order.transition_to(new_status)
+            if new_status == OrderStatus.CANCELLED and prev_status != OrderStatus.CANCELLED:
+                restore_inventory_stock(order.items.all())
         except ValidationError as err:
             return Response(err.detail, status=status.HTTP_400_BAD_REQUEST)
 

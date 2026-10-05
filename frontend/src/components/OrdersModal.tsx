@@ -6,9 +6,10 @@ interface OrdersModalProps {
   isOpen: boolean;
   onClose: () => void;
   onOpenPaymentModal?: (order: Order) => void;
+  onOrderCancelled?: () => void;
 }
 
-export const OrdersModal: React.FC<OrdersModalProps> = ({ isOpen, onClose, onOpenPaymentModal }) => {
+export const OrdersModal: React.FC<OrdersModalProps> = ({ isOpen, onClose, onOpenPaymentModal, onOrderCancelled }) => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -38,6 +39,9 @@ export const OrdersModal: React.FC<OrdersModalProps> = ({ isOpen, onClose, onOpe
     try {
       const updated = await ordersClient.cancelOrder(orderId);
       setOrders((prev) => prev.map((o) => (o.id === orderId ? updated : o)));
+      if (onOrderCancelled) {
+        onOrderCancelled();
+      }
     } catch (err: any) {
       alert(err.message || 'Could not cancel order.');
     }

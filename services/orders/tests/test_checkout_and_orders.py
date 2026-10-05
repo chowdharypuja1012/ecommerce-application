@@ -66,10 +66,11 @@ class CheckoutAndOrdersAPITestCase(APITestCase):
         response = self.client.post("/api/v1/checkout/", self.valid_address, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    @patch("orders.views.deduct_inventory_stock")
     @patch("orders.views.clear_user_cart")
     @patch("orders.views.verify_and_resolve_products")
     @patch("orders.views.fetch_user_cart")
-    def test_checkout_success_creates_pending_order(self, mock_fetch_cart, mock_verify, mock_clear_cart):
+    def test_checkout_success_creates_pending_order(self, mock_fetch_cart, mock_verify, mock_clear_cart, mock_deduct):
         mock_fetch_cart.return_value = {
             "items": [{"product_id": 1, "quantity": 2, "unit_price": "25.00"}],
             "total_items": 1,
@@ -93,6 +94,7 @@ class CheckoutAndOrdersAPITestCase(APITestCase):
         self.assertEqual(response.data["total_amount"], "50.00")
         self.assertEqual(len(response.data["items"]), 1)
         self.assertEqual(response.data["items"][0]["product_name"], "Premium Widget")
+        mock_deduct.assert_called_once()
 
         # Verify DB records
         order = Order.objects.get(id=response.data["id"])

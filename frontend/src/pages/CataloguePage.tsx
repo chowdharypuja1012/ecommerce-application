@@ -513,6 +513,7 @@ export const CataloguePage: React.FC = () => {
         savedAddresses={savedAddresses}
         onOrderSuccess={() => {
           loadCart(); // Refresh empty cart after successful checkout
+          loadProducts(); // Refresh live inventory stock counts & sold-out badges on storefront
         }}
         onOpenPaymentModal={handleOpenPaymentModalForOrder}
       />
@@ -522,6 +523,9 @@ export const CataloguePage: React.FC = () => {
         isOpen={isOrdersModalOpen}
         onClose={() => setIsOrdersModalOpen(false)}
         onOpenPaymentModal={handleOpenPaymentModalForOrder}
+        onOrderCancelled={() => {
+          loadProducts(); // Refresh live inventory stock counts if order is cancelled
+        }}
       />
 
       {/* Payment Sandbox Simulator Modal */}
