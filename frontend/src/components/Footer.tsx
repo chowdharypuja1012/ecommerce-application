@@ -17,7 +17,34 @@ export const Footer: React.FC = () => {
       <div className="footer-main">
         <div className="container">
           <div className="footer-logo">
-            Sweet Sentiments <span className="logo-heart" style={{ color: 'var(--ruja-pink)', fontSize: '1rem' }}>♡</span>
+            <div className="logo-emblem">
+              <svg viewBox="0 0 32 32" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M16 13C16 13 13 8 8.5 8C5.46 8 3 10.46 3 13.5C3 17.5 9 20 16 22C23 20 29 17.5 29 13.5C29 10.46 26.54 8 23.5 8C19 8 16 13 16 13Z"
+                  fill="#FFF0F5"
+                  stroke="#E85B86"
+                  strokeWidth="1.8"
+                  strokeLinejoin="round"
+                />
+                <circle cx="16" cy="13" r="2.8" fill="#E85B86" />
+                <path
+                  d="M13.5 15.5L8.5 24M18.5 15.5L23.5 24"
+                  stroke="#E85B86"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M26 4L26.8 6.2L29 7L26.8 7.8L26 10L25.2 7.8L23 7L25.2 6.2L26 4Z"
+                  fill="#F59E0B"
+                />
+              </svg>
+            </div>
+            <div className="brand-text-wrap" style={{ textAlign: 'left' }}>
+              <span className="brand-name-script" style={{ fontSize: '1.4rem' }}>
+                Sweet <span className="brand-heart-dot">♡</span>
+              </span>
+              <span className="brand-name-sub">SENTIMENTS</span>
+            </div>
           </div>
           <div className="footer-links">
             <a href="#shop" className="footer-link">Shop</a>
